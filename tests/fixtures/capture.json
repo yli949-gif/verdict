@@ -1,0 +1,47 @@
+{
+  "id": "55U43170E2019660P",
+  "amount": {
+    "currency_code": "USD",
+    "value": "62.00"
+  },
+  "final_capture": true,
+  "seller_protection": {
+    "status": "ELIGIBLE",
+    "dispute_categories": [
+      "ITEM_NOT_RECEIVED",
+      "UNAUTHORIZED_TRANSACTION"
+    ]
+  },
+  "status": "PENDING",
+  "status_details": {
+    "reason": "BUYER_COMPLAINT"
+  },
+  "supplementary_data": {
+    "related_ids": {
+      "order_id": "2B456142VA476284X"
+    }
+  },
+  "payee": {
+    "email_address": "seller@example.com",
+    "merchant_id": "6VGPMS3QHUXRC"
+  },
+  "create_time": "2026-11-06T09:07:42Z",
+  "update_time": "2026-11-06T20:44:03Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/payments/captures/55U43170E2019660P",
+      "rel": "self",
+      "method": "GET"
+    },
+    {
+      "href": "https://api.sandbox.paypal.com/v2/payments/captures/55U43170E2019660P/refund",
+      "rel": "refund",
+      "method": "POST"
+    },
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2B456142VA476284X",
+      "rel": "up",
+      "method": "GET"
+    }
+  ]
+}

@@ -37,6 +37,8 @@ POLICY = {
                "currently permitted; anything else is rejected with ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE.",
 }
 
+AUTO_EVIDENCE_COST = 0.5  # USD: proof is already in PayPal, submitting it is one call
+
 # documented assumptions, not predictions
 P_KEEP = {"proof_full": 0.80, "proof_partial": 0.50, "snad_evidence": 0.40, "unauth_proof": 0.70, "no_proof": 0.05, "wait": 0.50}
 
@@ -142,6 +144,7 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
                             "notes": _notes_shipped(b, t)}]
         if b.seller_has_signature_proof:
             v.evidence_plan.append({"evidence_type": "PROOF_OF_DELIVERY_SIGNATURE", "notes": "Carrier signature confirmation attached."})
+        v.flags.append("auto_evidence")  # proof is already in PayPal; submitting it is one API call
         if "provide_evidence" in b.links:
             v.verdict, v.action = "RESPOND_WITH_EVIDENCE", "provide_evidence"
         elif "provide_supporting_info" in b.links:
@@ -159,13 +162,22 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
             v.verdict, v.action, v.confidence, v.p_keep = "REFUND_NOW", "accept_claim", "medium", P_KEEP["no_proof"]
         v.rules.append(Rule("R3", "Shipment went to an address different from the one on the PayPal transaction; Seller Protection does not apply.", POLICY["SP_INELIGIBLE"]))
         return
-    if t and t.tracking_number and t.status.upper() in ("SHIPPED", "IN_TRANSIT") and not covered:
-        # tracking exists but protection says NOT_ELIGIBLE (e.g. direct card). Still worth replying with tracking.
+    if t and t.tracking_number and t.status.upper() in ("SHIPPED", "IN_TRANSIT", "DELIVERED") and not covered:
+        # tracking exists but protection says NOT_ELIGIBLE (e.g. direct card). PayPal still weighs delivery proof.
+        plan = [{"evidence_type": "PROOF_OF_FULFILLMENT" if t.status.upper() == "DELIVERED" else "ONLINE_TRACKING_INFORMATION",
+                 "evidence_info": {"tracking_info": [{"carrier_name": t.carrier or "OTHER", "tracking_number": t.tracking_number}]}, "notes": _notes_shipped(b, t)}]
+        v.flags.append("auto_evidence")
+        if t.status.upper() == "DELIVERED" and ("provide_evidence" in b.links or "provide_supporting_info" in b.links):
+            v.verdict, v.confidence, v.p_keep = "RESPOND_WITH_EVIDENCE", "medium", P_KEEP["proof_partial"]
+            v.action = "provide_evidence" if "provide_evidence" in b.links else "provide_supporting_info"
+            v.evidence_plan = plan
+            v.rules.append(Rule("R4c", "Delivered tracking exists but the transaction is NOT_ELIGIBLE for Seller Protection; PayPal still reviews delivery proof on the merits.", POLICY["SP_INELIGIBLE"]))
+            return
         v.verdict, v.action, v.confidence, v.p_keep = "REPLY_AND_WAIT", "send_message", "medium", P_KEEP["proof_partial"]
         v.rules.append(Rule("R4b", "Tracking exists but the transaction is NOT_ELIGIBLE for Seller Protection; share tracking and offer to reship/refund if undelivered.", POLICY["SP_INELIGIBLE"]))
         v.message_draft = _msg_in_transit(b, t)
         if "send_message" not in b.links and "provide_evidence" in b.links:
-            v.action = "provide_evidence"; v.evidence_plan = [{"evidence_type": "ONLINE_TRACKING_INFORMATION", "evidence_info": {"tracking_info": [{"carrier_name": t.carrier or "OTHER", "tracking_number": t.tracking_number}]}, "notes": _notes_shipped(b, t)}]
+            v.action = "provide_evidence"; v.evidence_plan = plan
         return
     if t and t.tracking_number and t.status.upper() in ("SHIPPED", "IN_TRANSIT") and b.expected_delivery and b.expected_delivery > b.now:
         v.verdict, v.action, v.confidence, v.p_keep = "REPLY_AND_WAIT", "send_message", "medium", P_KEEP["wait"]
@@ -228,7 +240,8 @@ def _finalize(v: Verdict, b: EvidenceBundle, cost: float) -> Verdict:
     elif v.verdict == "OFFER_PARTIAL":
         v.expected_value = round(0.5 * b.amount - cost, 2)
     else:
-        v.expected_value = round(v.p_keep * b.amount - cost, 2)
+        eff_cost = AUTO_EVIDENCE_COST if "auto_evidence" in v.flags else cost
+        v.expected_value = round(v.p_keep * b.amount - eff_cost, 2)
     # safety: the action must be one PayPal allows now
     if v.action and v.action not in b.links:
         v.flags.append(f"action_{v.action}_not_allowed_now")

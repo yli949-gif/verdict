@@ -1,0 +1,80 @@
+{
+ "id": "case-013",
+ "source": "synthetic",
+ "label": "REFUND_NOW",
+ "label_reason": "shipped to a different address",
+ "reviewed_by": "",
+ "notes": "",
+ "bundle": {
+  "dispute_id": "SYN-011",
+  "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+  "status": "UNDER_REVIEW",
+  "dispute_state": "UNDER_PAYPAL_REVIEW",
+  "life_cycle_stage": "INQUIRY",
+  "amount": 420.0,
+  "currency": "USD",
+  "seller_response_due": null,
+  "links": [
+   "self",
+   "provide_supporting_info"
+  ],
+  "allowed_response_options": {
+   "accept_claim": {
+    "accept_claim_types": [
+     "REFUND",
+     "PARTIAL_REFUND"
+    ]
+   }
+  },
+  "capture_id": "CAP000011",
+  "order_id": "ORD000011",
+  "transaction_status": "HELD",
+  "seller_protection_status": "ELIGIBLE",
+  "seller_protection_categories": [
+   "ITEM_NOT_RECEIVED",
+   "UNAUTHORIZED_TRANSACTION"
+  ],
+  "dispute_seller_protection_eligible": true,
+  "items": [
+   {
+    "item_id": "SKU-11",
+    "name": "Item",
+    "quantity": 1,
+    "item_type": "PRODUCT"
+   }
+  ],
+  "paypal_ship_to": {
+   "address_line_1": "2211 N First St",
+   "admin_area_2": "San Jose",
+   "admin_area_1": "CA",
+   "postal_code": "95131",
+   "country_code": "US"
+  },
+  "trackers": [
+   {
+    "carrier": "USPS",
+    "tracking_number": "94001000000000000011",
+    "status": "SHIPPED",
+    "ship_to": {
+     "address_line_1": "9 Elm Ave",
+     "admin_area_2": "Fresno",
+     "admin_area_1": "CA",
+     "postal_code": "93650",
+     "country_code": "US"
+    }
+   }
+  ],
+  "buyer_messages": [
+   "I never received this."
+  ],
+  "merchant_contacted": false,
+  "sub_reason": "",
+  "seller_has_signature_proof": false,
+  "seller_has_listing_evidence": false,
+  "seller_has_return_policy": false,
+  "seller_refund_already_issued": false,
+  "expected_delivery": null,
+  "evidences_submitted": [],
+  "now": "2026-11-07T12:00:00Z"
+ }
+}
