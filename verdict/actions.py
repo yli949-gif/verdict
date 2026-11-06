@@ -10,6 +10,7 @@ from typing import Any
 
 from .config import settings
 from .engine import Verdict
+from .contract import ContractError
 from .paypal import ActionNotAllowed, PayPalClient, PayPalError
 
 AUDIT = settings.data_dir / "audit.jsonl"
@@ -75,7 +76,7 @@ def execute(client: PayPalClient, verdict: Verdict, *, action: str | None = None
         after = client.get_dispute(verdict.dispute_id)
         result = {"ok": True, "action": action, "request": req, "response": resp,
                   "status_before": dispute.get("status"), "status_after": after.get("status"), "links_after": [l["rel"] for l in after.get("links", [])]}
-    except (ActionNotAllowed, PayPalError) as e:
+    except (ActionNotAllowed, PayPalError, ContractError) as e:
         result = {"ok": False, "action": action, "request": req, "error": str(e),
                   "issue": getattr(e, "issue", ""), "status_before": dispute.get("status")}
     audit({"dispute_id": verdict.dispute_id, "actor": actor, "verdict": verdict.verdict, **result})

@@ -14,6 +14,7 @@ from typing import Optional
 
 from .bundle import EvidenceBundle
 from .config import settings
+from .contract import carrier_for_paypal
 
 INR = "MERCHANDISE_OR_SERVICE_NOT_RECEIVED"
 SNAD = "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED"
@@ -140,7 +141,7 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
         v.rules.append(Rule("R1", f"Seller Protection ELIGIBLE for ITEM_NOT_RECEIVED and PayPal already holds tracking "
                                   f"{t.carrier} {t.tracking_number} ({t.status}) to the PayPal address.", POLICY["SP_INR"]))
         v.evidence_plan = [{"evidence_type": "PROOF_OF_FULFILLMENT",
-                            "evidence_info": {"tracking_info": [{"carrier_name": t.carrier or "OTHER", "tracking_number": t.tracking_number}]},
+                            "evidence_info": {"tracking_info": [{**carrier_for_paypal(t.carrier), "tracking_number": t.tracking_number}]},
                             "notes": _notes_shipped(b, t)}]
         if b.seller_has_signature_proof:
             v.evidence_plan.append({"evidence_type": "PROOF_OF_DELIVERY_SIGNATURE", "notes": "Carrier signature confirmation attached."})
@@ -168,7 +169,7 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
     if t and t.tracking_number and t.status.upper() in ("SHIPPED", "IN_TRANSIT", "DELIVERED") and not covered:
         # tracking exists but protection says NOT_ELIGIBLE (e.g. direct card). PayPal still weighs delivery proof.
         plan = [{"evidence_type": "PROOF_OF_FULFILLMENT" if t.status.upper() == "DELIVERED" else "ONLINE_TRACKING_INFORMATION",
-                 "evidence_info": {"tracking_info": [{"carrier_name": t.carrier or "OTHER", "tracking_number": t.tracking_number}]}, "notes": _notes_shipped(b, t)}]
+                 "evidence_info": {"tracking_info": [{**carrier_for_paypal(t.carrier), "tracking_number": t.tracking_number}]}, "notes": _notes_shipped(b, t)}]
         v.flags.append("auto_evidence")
         if t.status.upper() == "DELIVERED" and ("provide_evidence" in b.links or "provide_supporting_info" in b.links):
             v.verdict, v.confidence, v.p_keep = "RESPOND_WITH_EVIDENCE", "medium", P_KEEP["proof_partial"]
@@ -229,7 +230,7 @@ def _decide_unauth(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float)
     if covered and full_proof and "provide_evidence" in b.links:
         v.verdict, v.action, v.confidence, v.p_keep = "RESPOND_WITH_EVIDENCE", "provide_evidence", "high", P_KEEP["unauth_proof"]
         v.rules.append(Rule("R6", "Seller Protection ELIGIBLE for UNAUTHORIZED_TRANSACTION and the item shipped to the PayPal address with tracking.", POLICY["SP_UNAUTH"]))
-        v.evidence_plan = [{"evidence_type": "PROOF_OF_FULFILLMENT", "evidence_info": {"tracking_info": [{"carrier_name": t.carrier or "OTHER", "tracking_number": t.tracking_number}]}, "notes": _notes_shipped(b, t)}]
+        v.evidence_plan = [{"evidence_type": "PROOF_OF_FULFILLMENT", "evidence_info": {"tracking_info": [{**carrier_for_paypal(t.carrier), "tracking_number": t.tracking_number}]}, "notes": _notes_shipped(b, t)}]
         return
     v.verdict, v.action, v.confidence, v.p_keep = "REFUND_NOW", "accept_claim", "high", P_KEEP["no_proof"]
     v.rules.append(Rule("R6b", "Unauthorized claim without Seller Protection coverage or shipment proof: the seller carries the loss either way; refund to avoid fees.", POLICY["SP_INELIGIBLE"]))
@@ -250,7 +251,7 @@ def _finalize(v: Verdict, b: EvidenceBundle, cost: float) -> Verdict:
         v.flags.append(f"action_{v.action}_not_allowed_now")
         v.action = None
     # if the chosen path has non-positive EV, REFUND_NOW dominates
-    if v.verdict in ("RESPOND_WITH_EVIDENCE", "OFFER_PARTIAL", "REPLY_AND_WAIT") and v.expected_value <= 0 and "accept_claim" in b.links:
+    if v.verdict in ("RESPOND_WITH_EVIDENCE", "OFFER_PARTIAL", "REPLY_AND_WAIT") and v.expected_value <= 0 and "accept_claim" in b.links and "auto_evidence" not in v.flags:
         v.rules.append(Rule("R10", f"Expected value of contesting (${v.expected_value:.2f}) is not positive; refunding now is cheaper.", POLICY["DEADLINE"]))
         v.verdict, v.action, v.p_keep, v.expected_value = "REFUND_NOW", "accept_claim", 0.0, 0.0
     if not v.message_draft:

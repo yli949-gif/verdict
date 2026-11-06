@@ -9,8 +9,7 @@ Label distribution: REFUND_NOW 37, NO_ACTION_AVAILABLE 25, RESPOND_WITH_EVIDENCE
 | refund_all | **56%** | 0% | 31% | 0% | 46% | 72% | 89% | 0.0 |
 | fight_all | **45%** | 0% | 0% | 33% | 42% | 52% | 56% | 0.0 |
 | protection_only | **33%** | 37% | 8% | 26% | 39% | 20% | 33% | 0.0 |
-| verdict | **99%** | 0% | 1% | 0% | 98% | 100% | 100% | 0.0 |
-| llm_only | **62%** | 4% | 1% | 21% | 69% | 40% | 78% | 3302.9 |
+| verdict | **100%** | 0% | 0% | 0% | 100% | 100% | 100% | 0.0 |
 
 - unsafe-action rate: the system recommends calling a PayPal action that the dispute's HATEOAS links do not currently allow (PayPal would return ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE).
 - over-refund: refunds when the policy says respond/offer/wait (money left on the table). under-refund: contests when the policy says refund (time and fees wasted).
@@ -149,53 +148,6 @@ Label distribution: REFUND_NOW 37, NO_ACTION_AVAILABLE 25, RESPOND_WITH_EVIDENCE
 | case-059 | NO_ACTION_AVAILABLE | RESPOND_WITH_EVIDENCE | PayPal exposes no seller action |
 | case-060 | NO_ACTION_AVAILABLE | RESPOND_WITH_EVIDENCE | PayPal exposes no seller action |
 | case-061 | REFUND_NOW | RESPOND_WITH_EVIDENCE | SNAD below handling cost: gathering listing evidence costs more than the item |
-
-## verdict: disagreements with the oracle (1)
-
-| case | oracle | system | oracle reason |
-|---|---|---|---|
-| case-095 | RESPOND_WITH_EVIDENCE | REFUND_NOW | covered INR with tracking to PayPal address |
-
-## llm_only: disagreements with the oracle (36)
-
-| case | oracle | system | oracle reason |
-|---|---|---|---|
-| case-001 | NO_ACTION_AVAILABLE | REPLY_AND_WAIT | proof on file, PayPal reviewing, no submit link |
-| case-002 | NO_ACTION_AVAILABLE | REPLY_AND_WAIT | proof on file, PayPal reviewing, no submit link |
-| case-003 | REPLY_AND_WAIT | RESPOND_WITH_EVIDENCE | already responded; await |
-| case-006 | REFUND_NOW | REPLY_AND_WAIT | no proof of shipment |
-| case-010 | RESPOND_WITH_EVIDENCE | REPLY_AND_WAIT | covered INR with tracking; PayPal reviewing, add supporting note |
-| case-014 | REFUND_NOW | REPLY_AND_WAIT | shipped to a different address |
-| case-018 | RESPOND_WITH_EVIDENCE | REPLY_AND_WAIT | covered INR with tracking; PayPal reviewing, add supporting note |
-| case-022 | REFUND_NOW | REPLY_AND_WAIT | shipped to a different address |
-| case-026 | REFUND_NOW | REPLY_AND_WAIT | no proof of shipment |
-| case-029 | REPLY_AND_WAIT | RESPOND_WITH_EVIDENCE | tracking but not protected: inform buyer |
-| case-034 | REFUND_NOW | REPLY_AND_WAIT | shipped to a different address |
-| case-042 | REFUND_NOW | REPLY_AND_WAIT | shipped to a different address |
-| case-043 | NO_ACTION_AVAILABLE | REFUND_NOW | PayPal exposes no seller action |
-| case-044 | REFUND_NOW | REPLY_AND_WAIT | intangible item: no shipping proof possible |
-| case-045 | RESPOND_WITH_EVIDENCE | REPLY_AND_WAIT | covered INR with tracking to PayPal address |
-| case-048 | RESPOND_WITH_EVIDENCE | REFUND_NOW | shipped to a different address |
-| case-049 | REFUND_NOW | REPLY_AND_WAIT | SNAD below handling cost: gathering listing evidence costs more than the item |
-| case-051 | REFUND_NOW | RESPOND_WITH_EVIDENCE | SNAD below handling cost: gathering listing evidence costs more than the item |
-| case-055 | REFUND_NOW | RESPOND_WITH_EVIDENCE | SNAD below handling cost: gathering listing evidence costs more than the item |
-| case-057 | REFUND_NOW | RESPOND_WITH_EVIDENCE | SNAD below handling cost: gathering listing evidence costs more than the item |
-| case-061 | REFUND_NOW | REPLY_AND_WAIT | SNAD below handling cost: gathering listing evidence costs more than the item |
-| case-062 | OFFER_PARTIAL | REPLY_AND_WAIT | no listing evidence; offer beats loss + return |
-| case-063 | REFUND_NOW | REPLY_AND_WAIT | SNAD below handling cost: gathering listing evidence costs more than the item |
-| case-064 | REFUND_NOW | REPLY_AND_WAIT | SNAD without evidence |
-| case-065 | NO_ACTION_AVAILABLE | REFUND_NOW | PayPal exposes no seller action |
-| case-066 | NO_ACTION_AVAILABLE | REFUND_NOW | PayPal exposes no seller action |
-| case-067 | REFUND_NOW | REPLY_AND_WAIT | SNAD below handling cost: gathering listing evidence costs more than the item |
-| case-068 | OFFER_PARTIAL | REPLY_AND_WAIT | no listing evidence; offer beats loss + return |
-| case-069 | REFUND_NOW | REPLY_AND_WAIT | SNAD below handling cost: gathering listing evidence costs more than the item |
-| case-070 | REFUND_NOW | REPLY_AND_WAIT | SNAD without evidence |
-| case-071 | NO_ACTION_AVAILABLE | REFUND_NOW | PayPal exposes no seller action |
-| case-073 | REFUND_NOW | REPLY_AND_WAIT | unauthorized without coverage/proof |
-| case-079 | REFUND_NOW | RESPOND_WITH_EVIDENCE | unauthorized without coverage/proof |
-| case-086 | REFUND_NOW | REPLY_AND_WAIT | no proof of shipment |
-| case-091 | REPLY_AND_WAIT | RESPOND_WITH_EVIDENCE | uncommon reason: gather facts |
-| case-094 | NO_ACTION_AVAILABLE | REPLY_AND_WAIT | proof on file, PayPal reviewing, no submit link |
 
 ## Limitations
 

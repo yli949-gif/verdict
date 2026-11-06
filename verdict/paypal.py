@@ -20,6 +20,7 @@ from typing import Any, Optional
 import httpx
 
 from .config import settings
+from .contract import validate as validate_contract
 
 
 class PayPalError(Exception):
@@ -123,6 +124,7 @@ class PayPalClient:
     # ----- seller actions (all gated) -----
     def send_message(self, dispute: dict, message: str) -> dict:
         self.require_link(dispute, "send_message")
+        validate_contract("send_message", {"message": message})
         return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/send-message",
                              json_body={"message": message}, action="send_message")
 
@@ -134,12 +136,14 @@ class PayPalClient:
         payload: dict[str, Any] = {"evidences": evidences}
         if return_shipping_address:
             payload["return_shipping_address"] = return_shipping_address
+        validate_contract("provide_evidence", payload)
         body, ctype = encode_multipart(payload, file)
         return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/provide-evidence",
                              content=body, content_type=ctype, action="provide_evidence")
 
     def provide_supporting_info(self, dispute: dict, notes: str, file: tuple[str, bytes, str] | None = None) -> dict:
         self.require_link(dispute, "provide_supporting_info")
+        validate_contract("provide_supporting_info", {"notes": notes})
         body, ctype = encode_multipart({"notes": notes}, file)
         return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/provide-supporting-info",
                              content=body, content_type=ctype, action="provide_supporting_info")
@@ -155,6 +159,7 @@ class PayPalClient:
             payload["refund_amount"] = refund_amount
         if return_shipping_address:
             payload["return_shipping_address"] = return_shipping_address
+        validate_contract("accept_claim", payload)
         return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/accept-claim",
                              json_body=payload, action="accept_claim")
 
@@ -169,11 +174,13 @@ class PayPalClient:
             payload["offer_amount"] = offer_amount
         if return_shipping_address:
             payload["return_shipping_address"] = return_shipping_address
+        validate_contract("make_offer", payload)
         return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/make-offer",
                              json_body=payload, action="make_offer")
 
     def escalate(self, dispute: dict, note: str) -> dict:
         self.require_link(dispute, "escalate")
+        validate_contract("escalate", {"note": note})
         return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/escalate",
                              json_body={"note": note}, action="escalate")
 
