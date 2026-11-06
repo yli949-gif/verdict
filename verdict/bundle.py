@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 
 
 class Address(BaseModel):
@@ -74,6 +74,7 @@ class EvidenceBundle(BaseModel):
     now: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # ----- derived helpers -----
+    @computed_field  # type: ignore[misc]
     @property
     def is_physical(self) -> bool:
         return all(i.item_type in ("PRODUCT", "") for i in self.items) if self.items else True
@@ -83,6 +84,7 @@ class EvidenceBundle(BaseModel):
         order = {"DELIVERED": 0, "SHIPPED": 1, "IN_TRANSIT": 1, "ON_HOLD": 2, "CANCELLED": 3, "": 4}
         return min(self.trackers, key=lambda t: order.get(t.status.upper(), 4)) if self.trackers else None
 
+    @computed_field  # type: ignore[misc]
     @property
     def tracker_matches_paypal_address(self) -> Optional[bool]:
         t = self.best_tracker
@@ -91,6 +93,7 @@ class EvidenceBundle(BaseModel):
         ship = t.ship_to or self.paypal_ship_to
         return ship.key() == self.paypal_ship_to.key()
 
+    @computed_field  # type: ignore[misc]
     @property
     def hours_to_deadline(self) -> Optional[float]:
         if not self.seller_response_due:

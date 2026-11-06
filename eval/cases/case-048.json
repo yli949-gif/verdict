@@ -1,17 +1,17 @@
 {
  "id": "case-048",
  "source": "synthetic",
- "label": "REFUND_NOW",
- "label_reason": "SNAD below handling cost: gathering listing evidence costs more than the item",
+ "label": "RESPOND_WITH_EVIDENCE",
+ "label_reason": "shipped to a different address",
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-046",
-  "reason": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED",
+  "dispute_id": "SYN-045",
+  "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
-  "amount": 12.0,
+  "amount": 62.0,
   "currency": "USD",
   "seller_response_due": "2026-11-17T12:00:00Z",
   "links": [
@@ -35,8 +35,8 @@
     ]
    }
   },
-  "capture_id": "CAP000046",
-  "order_id": "ORD000046",
+  "capture_id": "CAP000045",
+  "order_id": "ORD000045",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -46,7 +46,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-46",
+    "item_id": "SKU-45",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -62,28 +62,32 @@
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000046",
-    "status": "DELIVERED",
+    "tracking_number": "94001000000000000045",
+    "status": "SHIPPED",
     "ship_to": {
-     "address_line_1": "2211 N First St",
-     "admin_area_2": "San Jose",
+     "address_line_1": "9 Elm Ave",
+     "admin_area_2": "Fresno",
      "admin_area_1": "CA",
-     "postal_code": "95131",
+     "postal_code": "93650",
      "country_code": "US"
     }
    }
   ],
   "buyer_messages": [
-   "Not what I ordered."
+   "I never received this."
   ],
   "merchant_contacted": false,
   "sub_reason": "",
-  "seller_has_signature_proof": false,
-  "seller_has_listing_evidence": true,
-  "seller_has_return_policy": true,
+  "seller_has_signature_proof": true,
+  "seller_has_listing_evidence": false,
+  "seller_has_return_policy": false,
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": false,
+  "hours_to_deadline": 240.0
  }
 }

@@ -1,34 +1,34 @@
 {
  "id": "case-002",
  "source": "sandbox",
- "label": "REPLY_AND_WAIT",
- "label_reason": "already responded; await",
+ "label": "NO_ACTION_AVAILABLE",
+ "label_reason": "proof on file, PayPal reviewing, no submit link",
  "reviewed_by": "",
  "notes": "captured from PayPal sandbox 2026-11-06",
  "bundle": {
-  "dispute_id": "PP-R-XSW-10196894",
+  "dispute_id": "PP-R-WMD-10196904",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
-  "status": "WAITING_FOR_SELLER_RESPONSE",
-  "dispute_state": "REQUIRED_ACTION",
-  "life_cycle_stage": "CHARGEBACK",
-  "amount": 35.0,
+  "status": "WAITING_FOR_BUYER_RESPONSE",
+  "dispute_state": "REQUIRED_OTHER_PARTY_ACTION",
+  "life_cycle_stage": "INQUIRY",
+  "amount": 89.0,
   "currency": "USD",
-  "seller_response_due": "2026-11-17T04:59:59Z",
+  "seller_response_due": null,
   "links": [
    "self",
    "accept_claim",
-   "provide_evidence"
+   "send_message",
+   "escalate"
   ],
   "allowed_response_options": {
    "accept_claim": {
     "accept_claim_types": [
-     "REFUND",
-     "PARTIAL_REFUND"
+     "REFUND"
     ]
    }
   },
-  "capture_id": "0E853853CV656352M",
-  "order_id": "0CP32478A18668504",
+  "capture_id": "4F163447MV347821K",
+  "order_id": "4KA946696W852404F",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -38,8 +38,8 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "HAT-03",
-    "name": "Wool beanie",
+    "item_id": "POUR-11",
+    "name": "Ceramic pour-over set",
     "quantity": 1,
     "item_type": "PRODUCT"
    }
@@ -51,9 +51,22 @@
    "postal_code": "95131",
    "country_code": "US"
   },
-  "trackers": [],
+  "trackers": [
+   {
+    "carrier": "USPS",
+    "tracking_number": "9400100000000000000089",
+    "status": "SHIPPED",
+    "ship_to": {
+     "address_line_1": "2211 N First St",
+     "admin_area_2": "San Jose",
+     "admin_area_1": "CA",
+     "postal_code": "95131",
+     "country_code": "US"
+    }
+   }
+  ],
   "buyer_messages": [
-   "Sandbox test #2: beanie never arrived, no tracking provided by seller."
+   "It's been over a week and the pour-over set hasn't arrived. No delivery notice either."
   ],
   "merchant_contacted": false,
   "sub_reason": "",
@@ -63,9 +76,12 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [
-   "PROOF_OF_FULFILLMENT",
-   "OTHER"
+   "PROOF_OF_FULFILLMENT"
   ],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": null
  }
 }

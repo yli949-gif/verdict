@@ -4,16 +4,16 @@
  "label": "RESPOND_WITH_EVIDENCE",
  "label_reason": "covered INR with tracking to PayPal address",
  "reviewed_by": "",
- "notes": "order has no shipping address",
+ "notes": "deadline already passed",
  "bundle": {
-  "dispute_id": "SYN-082",
+  "dispute_id": "SYN-081",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
   "amount": 62.0,
   "currency": "USD",
-  "seller_response_due": "2026-11-17T12:00:00Z",
+  "seller_response_due": "2026-11-07T07:00:00Z",
   "links": [
    "self",
    "accept_claim",
@@ -35,8 +35,8 @@
     ]
    }
   },
-  "capture_id": "CAP000082",
-  "order_id": "ORD000082",
+  "capture_id": "CAP000081",
+  "order_id": "ORD000081",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -46,17 +46,23 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-82",
+    "item_id": "SKU-81",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
    }
   ],
-  "paypal_ship_to": null,
+  "paypal_ship_to": {
+   "address_line_1": "2211 N First St",
+   "admin_area_2": "San Jose",
+   "admin_area_1": "CA",
+   "postal_code": "95131",
+   "country_code": "US"
+  },
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000082",
+    "tracking_number": "94001000000000000081",
     "status": "DELIVERED",
     "ship_to": {
      "address_line_1": "2211 N First St",
@@ -78,6 +84,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": -5.0
  }
 }

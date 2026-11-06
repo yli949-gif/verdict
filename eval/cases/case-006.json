@@ -1,21 +1,22 @@
 {
  "id": "case-006",
  "source": "synthetic",
- "label": "NO_ACTION_AVAILABLE",
- "label_reason": "PayPal exposes no seller action",
+ "label": "REFUND_NOW",
+ "label_reason": "no proof of shipment",
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-004",
+  "dispute_id": "SYN-003",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "UNDER_REVIEW",
   "dispute_state": "UNDER_PAYPAL_REVIEW",
   "life_cycle_stage": "INQUIRY",
-  "amount": 9.5,
+  "amount": 180.0,
   "currency": "USD",
   "seller_response_due": null,
   "links": [
-   "self"
+   "self",
+   "provide_supporting_info"
   ],
   "allowed_response_options": {
    "accept_claim": {
@@ -25,8 +26,8 @@
     ]
    }
   },
-  "capture_id": "CAP000004",
-  "order_id": "ORD000004",
+  "capture_id": "CAP000003",
+  "order_id": "ORD000003",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -36,7 +37,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-4",
+    "item_id": "SKU-3",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -61,6 +62,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": null,
+  "hours_to_deadline": null
  }
 }

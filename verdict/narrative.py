@@ -25,7 +25,8 @@ Hard rules:
 - Never claim to know how PayPal will decide. Say "PayPal decides"; this is a recommendation.
 - Be concrete: cite the rule ids (e.g. R1) and what fact triggered them.
 - Keep the buyer note polite, short, factual, no legal threats.
-Return JSON: {"explanation": str, "buyer_note": str, "explanation_zh": str}. explanation_zh is a faithful Simplified Chinese version of explanation."""
+Keep explanation under 120 words and buyer_note under 60 words.
+Return ONLY a JSON object, no code fences: {"explanation": str, "buyer_note": str, "explanation_zh": str}. explanation_zh is a faithful Simplified Chinese version of explanation."""
 
 
 def explain(bundle: EvidenceBundle, verdict: Verdict, language: str = "en") -> Optional[dict]:
@@ -37,7 +38,7 @@ def explain(bundle: EvidenceBundle, verdict: Verdict, language: str = "en") -> O
         return None
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     payload = {"verdict": verdict.to_dict(), "bundle": json.loads(bundle.model_dump_json(exclude={"now"}))}
-    msg = client.messages.create(model=MODEL, max_tokens=900, system=SYSTEM,
+    msg = client.messages.create(model=MODEL, max_tokens=2000, system=SYSTEM,
                                  messages=[{"role": "user", "content": json.dumps(payload)}])
     text = "".join(block.text for block in msg.content if getattr(block, "type", "") == "text")
     m = re.search(r"\{.*\}", text, re.S)

@@ -1,26 +1,21 @@
 {
  "id": "case-072",
  "source": "synthetic",
- "label": "REFUND_NOW",
- "label_reason": "unauthorized without coverage/proof",
+ "label": "NO_ACTION_AVAILABLE",
+ "label_reason": "PayPal exposes no seller action",
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-070",
-  "reason": "UNAUTHORISED",
-  "status": "WAITING_FOR_SELLER_RESPONSE",
-  "dispute_state": "REQUIRED_ACTION",
+  "dispute_id": "SYN-069",
+  "reason": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED",
+  "status": "UNDER_REVIEW",
+  "dispute_state": "UNDER_PAYPAL_REVIEW",
   "life_cycle_stage": "INQUIRY",
-  "amount": 180.0,
+  "amount": 120.0,
   "currency": "USD",
-  "seller_response_due": "2026-11-17T12:00:00Z",
+  "seller_response_due": null,
   "links": [
-   "self",
-   "accept_claim",
-   "provide_evidence",
-   "send_message",
-   "escalate",
-   "make_offer"
+   "self"
   ],
   "allowed_response_options": {
    "accept_claim": {
@@ -28,15 +23,10 @@
      "REFUND",
      "PARTIAL_REFUND"
     ]
-   },
-   "make_offer": {
-    "offer_types": [
-     "REFUND"
-    ]
    }
   },
-  "capture_id": "CAP000070",
-  "order_id": "ORD000070",
+  "capture_id": "CAP000069",
+  "order_id": "ORD000069",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -46,7 +36,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-70",
+    "item_id": "SKU-69",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -59,7 +49,20 @@
    "postal_code": "95131",
    "country_code": "US"
   },
-  "trackers": [],
+  "trackers": [
+   {
+    "carrier": "USPS",
+    "tracking_number": "94001000000000000069",
+    "status": "DELIVERED",
+    "ship_to": {
+     "address_line_1": "2211 N First St",
+     "admin_area_2": "San Jose",
+     "admin_area_1": "CA",
+     "postal_code": "95131",
+     "country_code": "US"
+    }
+   }
+  ],
   "buyer_messages": [
    "Not what I ordered."
   ],
@@ -71,6 +74,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": null
  }
 }

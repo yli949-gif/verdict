@@ -1,17 +1,17 @@
 {
  "id": "case-090",
  "source": "messy",
- "label": "REPLY_AND_WAIT",
- "label_reason": "uncommon reason: gather facts",
+ "label": "REFUND_NOW",
+ "label_reason": "unauthorized without coverage/proof",
  "reviewed_by": "",
- "notes": "buyer says refund not processed",
+ "notes": "unauthorized, shipped to a different address",
  "bundle": {
-  "dispute_id": "SYN-088",
-  "reason": "CREDIT_NOT_PROCESSED",
+  "dispute_id": "SYN-087",
+  "reason": "UNAUTHORISED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
-  "amount": 62.0,
+  "amount": 180.0,
   "currency": "USD",
   "seller_response_due": "2026-11-17T12:00:00Z",
   "links": [
@@ -35,8 +35,8 @@
     ]
    }
   },
-  "capture_id": "CAP000088",
-  "order_id": "ORD000088",
+  "capture_id": "CAP000087",
+  "order_id": "ORD000087",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -46,7 +46,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-88",
+    "item_id": "SKU-87",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -59,7 +59,20 @@
    "postal_code": "95131",
    "country_code": "US"
   },
-  "trackers": [],
+  "trackers": [
+   {
+    "carrier": "USPS",
+    "tracking_number": "94001000000000000087",
+    "status": "DELIVERED",
+    "ship_to": {
+     "address_line_1": "9 Elm Ave",
+     "admin_area_2": "Fresno",
+     "admin_area_1": "CA",
+     "postal_code": "93650",
+     "country_code": "US"
+    }
+   }
+  ],
   "buyer_messages": [
    "Not what I ordered."
   ],
@@ -68,9 +81,13 @@
   "seller_has_signature_proof": false,
   "seller_has_listing_evidence": false,
   "seller_has_return_policy": false,
-  "seller_refund_already_issued": true,
+  "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": false,
+  "hours_to_deadline": 240.0
  }
 }

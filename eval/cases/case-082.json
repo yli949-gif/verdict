@@ -1,12 +1,12 @@
 {
  "id": "case-082",
  "source": "messy",
- "label": "RESPOND_WITH_EVIDENCE",
- "label_reason": "delivered proof, not protected: PayPal reviews on merits",
+ "label": "REFUND_NOW",
+ "label_reason": "no proof of shipment",
  "reviewed_by": "",
- "notes": "capture unreachable: protection UNKNOWN",
+ "notes": "only a cancelled tracker",
  "bundle": {
-  "dispute_id": "SYN-080",
+  "dispute_id": "SYN-079",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
@@ -35,15 +35,18 @@
     ]
    }
   },
-  "capture_id": "CAP000080",
-  "order_id": "ORD000080",
+  "capture_id": "CAP000079",
+  "order_id": "ORD000079",
   "transaction_status": "HELD",
-  "seller_protection_status": "UNKNOWN",
-  "seller_protection_categories": [],
-  "dispute_seller_protection_eligible": false,
+  "seller_protection_status": "ELIGIBLE",
+  "seller_protection_categories": [
+   "ITEM_NOT_RECEIVED",
+   "UNAUTHORIZED_TRANSACTION"
+  ],
+  "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-80",
+    "item_id": "SKU-79",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -59,8 +62,8 @@
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000080",
-    "status": "DELIVERED",
+    "tracking_number": "9400CANCELLED",
+    "status": "CANCELLED",
     "ship_to": {
      "address_line_1": "2211 N First St",
      "admin_area_2": "San Jose",
@@ -81,6 +84,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": 240.0
  }
 }

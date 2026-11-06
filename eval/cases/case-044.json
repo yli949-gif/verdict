@@ -1,12 +1,12 @@
 {
  "id": "case-044",
  "source": "synthetic",
- "label": "RESPOND_WITH_EVIDENCE",
- "label_reason": "covered INR with tracking to PayPal address",
+ "label": "REFUND_NOW",
+ "label_reason": "intangible item: no shipping proof possible",
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-042",
+  "dispute_id": "SYN-041",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
@@ -35,8 +35,8 @@
     ]
    }
   },
-  "capture_id": "CAP000042",
-  "order_id": "ORD000042",
+  "capture_id": "CAP000041",
+  "order_id": "ORD000041",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -46,10 +46,10 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-42",
+    "item_id": "SKU-41",
     "name": "Item",
     "quantity": 1,
-    "item_type": "PRODUCT"
+    "item_type": "DIGITAL"
    }
   ],
   "paypal_ship_to": {
@@ -59,20 +59,7 @@
    "postal_code": "95131",
    "country_code": "US"
   },
-  "trackers": [
-   {
-    "carrier": "USPS",
-    "tracking_number": "94001000000000000042",
-    "status": "SHIPPED",
-    "ship_to": {
-     "address_line_1": "2211 N First St",
-     "admin_area_2": "San Jose",
-     "admin_area_1": "CA",
-     "postal_code": "95131",
-     "country_code": "US"
-    }
-   }
-  ],
+  "trackers": [],
   "buyer_messages": [
    "I never received this."
   ],
@@ -82,8 +69,12 @@
   "seller_has_listing_evidence": false,
   "seller_has_return_policy": false,
   "seller_refund_already_issued": false,
-  "expected_delivery": "2026-11-10T12:00:00Z",
+  "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": false,
+  "tracker_matches_paypal_address": null,
+  "hours_to_deadline": 240.0
  }
 }

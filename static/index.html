@@ -110,7 +110,7 @@ function check(ok){return ok===true?`<span class="ok">✓ checks out</span>`:ok=
 function render(){
   const b=data.bundle,v=data.verdict,n=data.narrative; const color=COLOR[v.verdict];
   document.documentElement.style.setProperty("--v",color);
-  const t=b.trackers[0]; const due=v.deadline_hours!=null?`${Math.floor(v.deadline_hours/24)}d ${Math.round(v.deadline_hours%24)}h left`:null;
+  const t=b.trackers[0]; const due=v.deadline_hours!=null?`${Math.floor(v.deadline_hours/24)}d ${Math.floor(v.deadline_hours%24)}h left`:null;
   const sub={REFUND_NOW:"Contesting this one would cost more than it returns. Refunding closes it today and keeps your dispute rate clean.",
     RESPOND_WITH_EVIDENCE:"PayPal already holds the proof it asks for. Submit it so the case is decided on the record.",
     OFFER_PARTIAL:"No listing evidence on file; a partial refund usually beats a full loss plus return shipping.",

@@ -6,17 +6,18 @@
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-011",
+  "dispute_id": "SYN-010",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
-  "status": "UNDER_REVIEW",
-  "dispute_state": "UNDER_PAYPAL_REVIEW",
+  "status": "WAITING_FOR_SELLER_RESPONSE",
+  "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
-  "amount": 420.0,
+  "amount": 9.5,
   "currency": "USD",
-  "seller_response_due": null,
+  "seller_response_due": "2026-11-17T12:00:00Z",
   "links": [
    "self",
-   "provide_supporting_info"
+   "accept_claim",
+   "provide_evidence"
   ],
   "allowed_response_options": {
    "accept_claim": {
@@ -26,8 +27,8 @@
     ]
    }
   },
-  "capture_id": "CAP000011",
-  "order_id": "ORD000011",
+  "capture_id": "CAP000010",
+  "order_id": "ORD000010",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -37,7 +38,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-11",
+    "item_id": "SKU-10",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -53,7 +54,7 @@
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000011",
+    "tracking_number": "94001000000000000010",
     "status": "SHIPPED",
     "ship_to": {
      "address_line_1": "9 Elm Ave",
@@ -75,6 +76,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": false,
+  "hours_to_deadline": 240.0
  }
 }

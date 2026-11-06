@@ -54,7 +54,7 @@
   },
   "trackers": [
    {
-    "carrier": "",
+    "carrier": "USPS",
     "tracking_number": "9400100000000000000002",
     "status": "SHIPPED",
     "ship_to": {
@@ -75,6 +75,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 2,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": null
  }
 }

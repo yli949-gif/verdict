@@ -1,17 +1,17 @@
 {
  "id": "case-057",
  "source": "synthetic",
- "label": "RESPOND_WITH_EVIDENCE",
- "label_reason": "listing evidence available",
+ "label": "REFUND_NOW",
+ "label_reason": "SNAD below handling cost: gathering listing evidence costs more than the item",
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-055",
+  "dispute_id": "SYN-054",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
-  "amount": 120.0,
+  "amount": 12.0,
   "currency": "USD",
   "seller_response_due": "2026-11-17T12:00:00Z",
   "links": [
@@ -29,8 +29,8 @@
     ]
    }
   },
-  "capture_id": "CAP000055",
-  "order_id": "ORD000055",
+  "capture_id": "CAP000054",
+  "order_id": "ORD000054",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -40,7 +40,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-55",
+    "item_id": "SKU-54",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -56,7 +56,7 @@
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000055",
+    "tracking_number": "94001000000000000054",
     "status": "DELIVERED",
     "ship_to": {
      "address_line_1": "2211 N First St",
@@ -78,6 +78,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": 240.0
  }
 }

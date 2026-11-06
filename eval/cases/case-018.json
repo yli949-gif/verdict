@@ -1,12 +1,12 @@
 {
  "id": "case-018",
  "source": "synthetic",
- "label": "NO_ACTION_AVAILABLE",
- "label_reason": "PayPal exposes no seller action",
+ "label": "RESPOND_WITH_EVIDENCE",
+ "label_reason": "covered INR with tracking to PayPal address",
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-016",
+  "dispute_id": "SYN-015",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "UNDER_REVIEW",
   "dispute_state": "UNDER_PAYPAL_REVIEW",
@@ -15,7 +15,8 @@
   "currency": "USD",
   "seller_response_due": null,
   "links": [
-   "self"
+   "self",
+   "provide_supporting_info"
   ],
   "allowed_response_options": {
    "accept_claim": {
@@ -25,8 +26,8 @@
     ]
    }
   },
-  "capture_id": "CAP000016",
-  "order_id": "ORD000016",
+  "capture_id": "CAP000015",
+  "order_id": "ORD000015",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -36,7 +37,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-16",
+    "item_id": "SKU-15",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -52,7 +53,7 @@
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000016",
+    "tracking_number": "94001000000000000015",
     "status": "DELIVERED",
     "ship_to": {
      "address_line_1": "2211 N First St",
@@ -74,6 +75,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": null
  }
 }

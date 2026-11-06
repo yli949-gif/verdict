@@ -4,10 +4,10 @@
  "label": "REPLY_AND_WAIT",
  "label_reason": "uncommon reason: gather facts",
  "reviewed_by": "",
- "notes": "duplicate transaction claim",
+ "notes": "buyer says refund not processed",
  "bundle": {
-  "dispute_id": "SYN-089",
-  "reason": "DUPLICATE_TRANSACTION",
+  "dispute_id": "SYN-088",
+  "reason": "CREDIT_NOT_PROCESSED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
@@ -35,8 +35,8 @@
     ]
    }
   },
-  "capture_id": "CAP000089",
-  "order_id": "ORD000089",
+  "capture_id": "CAP000088",
+  "order_id": "ORD000088",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -46,7 +46,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-89",
+    "item_id": "SKU-88",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -68,9 +68,13 @@
   "seller_has_signature_proof": false,
   "seller_has_listing_evidence": false,
   "seller_has_return_policy": false,
-  "seller_refund_already_issued": false,
+  "seller_refund_already_issued": true,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": null,
+  "hours_to_deadline": 240.0
  }
 }

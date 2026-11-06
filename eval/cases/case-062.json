@@ -1,17 +1,17 @@
 {
  "id": "case-062",
  "source": "synthetic",
- "label": "REFUND_NOW",
- "label_reason": "SNAD below handling cost: gathering listing evidence costs more than the item",
+ "label": "OFFER_PARTIAL",
+ "label_reason": "no listing evidence; offer beats loss + return",
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-060",
+  "dispute_id": "SYN-059",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
-  "amount": 12.0,
+  "amount": 120.0,
   "currency": "USD",
   "seller_response_due": "2026-11-17T12:00:00Z",
   "links": [
@@ -19,7 +19,8 @@
    "accept_claim",
    "provide_evidence",
    "send_message",
-   "escalate"
+   "escalate",
+   "make_offer"
   ],
   "allowed_response_options": {
    "accept_claim": {
@@ -27,10 +28,15 @@
      "REFUND",
      "PARTIAL_REFUND"
     ]
+   },
+   "make_offer": {
+    "offer_types": [
+     "REFUND"
+    ]
    }
   },
-  "capture_id": "CAP000060",
-  "order_id": "ORD000060",
+  "capture_id": "CAP000059",
+  "order_id": "ORD000059",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -40,7 +46,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-60",
+    "item_id": "SKU-59",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -56,7 +62,7 @@
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000060",
+    "tracking_number": "94001000000000000059",
     "status": "DELIVERED",
     "ship_to": {
      "address_line_1": "2211 N First St",
@@ -78,6 +84,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": 240.0
  }
 }

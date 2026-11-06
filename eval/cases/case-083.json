@@ -2,18 +2,18 @@
  "id": "case-083",
  "source": "messy",
  "label": "RESPOND_WITH_EVIDENCE",
- "label_reason": "covered INR with tracking to PayPal address",
+ "label_reason": "delivered proof, not protected: PayPal reviews on merits",
  "reviewed_by": "",
- "notes": "deadline already passed",
+ "notes": "capture unreachable: protection UNKNOWN",
  "bundle": {
-  "dispute_id": "SYN-081",
+  "dispute_id": "SYN-080",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
   "amount": 62.0,
   "currency": "USD",
-  "seller_response_due": "2026-11-07T07:00:00Z",
+  "seller_response_due": "2026-11-17T12:00:00Z",
   "links": [
    "self",
    "accept_claim",
@@ -35,18 +35,15 @@
     ]
    }
   },
-  "capture_id": "CAP000081",
-  "order_id": "ORD000081",
+  "capture_id": "CAP000080",
+  "order_id": "ORD000080",
   "transaction_status": "HELD",
-  "seller_protection_status": "ELIGIBLE",
-  "seller_protection_categories": [
-   "ITEM_NOT_RECEIVED",
-   "UNAUTHORIZED_TRANSACTION"
-  ],
-  "dispute_seller_protection_eligible": true,
+  "seller_protection_status": "UNKNOWN",
+  "seller_protection_categories": [],
+  "dispute_seller_protection_eligible": false,
   "items": [
    {
-    "item_id": "SKU-81",
+    "item_id": "SKU-80",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -62,7 +59,7 @@
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000081",
+    "tracking_number": "94001000000000000080",
     "status": "DELIVERED",
     "ship_to": {
      "address_line_1": "2211 N First St",
@@ -84,6 +81,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": 240.0
  }
 }

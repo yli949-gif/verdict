@@ -6,7 +6,7 @@
  "reviewed_by": "",
  "notes": "",
  "bundle": {
-  "dispute_id": "SYN-014",
+  "dispute_id": "SYN-013",
   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
@@ -17,7 +17,10 @@
   "links": [
    "self",
    "accept_claim",
-   "provide_evidence"
+   "provide_evidence",
+   "send_message",
+   "escalate",
+   "make_offer"
   ],
   "allowed_response_options": {
    "accept_claim": {
@@ -25,10 +28,15 @@
      "REFUND",
      "PARTIAL_REFUND"
     ]
+   },
+   "make_offer": {
+    "offer_types": [
+     "REFUND"
+    ]
    }
   },
-  "capture_id": "CAP000014",
-  "order_id": "ORD000014",
+  "capture_id": "CAP000013",
+  "order_id": "ORD000013",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -38,7 +46,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-14",
+    "item_id": "SKU-13",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -54,7 +62,7 @@
   "trackers": [
    {
     "carrier": "USPS",
-    "tracking_number": "94001000000000000014",
+    "tracking_number": "94001000000000000013",
     "status": "DELIVERED",
     "ship_to": {
      "address_line_1": "2211 N First St",
@@ -76,6 +84,10 @@
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": 240.0
  }
 }

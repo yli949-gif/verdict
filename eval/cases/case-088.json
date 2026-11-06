@@ -2,16 +2,16 @@
  "id": "case-088",
  "source": "messy",
  "label": "RESPOND_WITH_EVIDENCE",
- "label_reason": "listing evidence available",
+ "label_reason": "covered INR with tracking to PayPal address",
  "reviewed_by": "",
- "notes": "SNAD with discount pressure",
+ "notes": "tracker without carrier",
  "bundle": {
-  "dispute_id": "SYN-086",
-  "reason": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED",
+  "dispute_id": "SYN-085",
+  "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
   "status": "WAITING_FOR_SELLER_RESPONSE",
   "dispute_state": "REQUIRED_ACTION",
   "life_cycle_stage": "INQUIRY",
-  "amount": 120.0,
+  "amount": 62.0,
   "currency": "USD",
   "seller_response_due": "2026-11-17T12:00:00Z",
   "links": [
@@ -35,8 +35,8 @@
     ]
    }
   },
-  "capture_id": "CAP000086",
-  "order_id": "ORD000086",
+  "capture_id": "CAP000085",
+  "order_id": "ORD000085",
   "transaction_status": "HELD",
   "seller_protection_status": "ELIGIBLE",
   "seller_protection_categories": [
@@ -46,7 +46,7 @@
   "dispute_seller_protection_eligible": true,
   "items": [
    {
-    "item_id": "SKU-86",
+    "item_id": "SKU-85",
     "name": "Item",
     "quantity": 1,
     "item_type": "PRODUCT"
@@ -61,8 +61,8 @@
   },
   "trackers": [
    {
-    "carrier": "USPS",
-    "tracking_number": "94001000000000000086",
+    "carrier": "",
+    "tracking_number": "94001000000000000085",
     "status": "DELIVERED",
     "ship_to": {
      "address_line_1": "2211 N First St",
@@ -74,16 +74,20 @@
    }
   ],
   "buyer_messages": [
-   "Item is fine actually, I just want a discount. If you don't refund I will chargeback."
+   "I never received this."
   ],
   "merchant_contacted": false,
   "sub_reason": "",
   "seller_has_signature_proof": false,
-  "seller_has_listing_evidence": true,
+  "seller_has_listing_evidence": false,
   "seller_has_return_policy": false,
   "seller_refund_already_issued": false,
   "expected_delivery": null,
   "evidences_submitted": [],
-  "now": "2026-11-07T12:00:00Z"
+  "supporting_info_submitted": 0,
+  "now": "2026-11-07T12:00:00Z",
+  "is_physical": true,
+  "tracker_matches_paypal_address": true,
+  "hours_to_deadline": 240.0
  }
 }
