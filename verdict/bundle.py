@@ -70,6 +70,7 @@ class EvidenceBundle(BaseModel):
     seller_refund_already_issued: bool = False
     expected_delivery: Optional[datetime] = None
     evidences_submitted: list[str] = Field(default_factory=list)
+    supporting_info_submitted: int = 0  # notes the seller already sent while PayPal reviews
     now: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # ----- derived helpers -----
@@ -152,5 +153,6 @@ def bundle_from_paypal(dispute: dict, capture: dict | None, order: dict | None, 
         merchant_contacted=ext.get("merchant_contacted"), sub_reason=sub,
         evidences_submitted=[e.get("evidence_type", "") for e in dispute.get("evidences", []) if e.get("source") == "SUBMITTED_BY_SELLER"],
         expected_delivery=_dt(pd.get("expected_delivery_date")),
+        supporting_info_submitted=sum(1 for x in dispute.get("supporting_info", []) if x.get("source") == "SUBMITTED_BY_SELLER"),
         **{k: v for k, v in facts.items() if k in EvidenceBundle.model_fields},
     )

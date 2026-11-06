@@ -147,6 +147,9 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
         v.flags.append("auto_evidence")  # proof is already in PayPal; submitting it is one API call
         if "provide_evidence" in b.links:
             v.verdict, v.action = "RESPOND_WITH_EVIDENCE", "provide_evidence"
+        elif "provide_supporting_info" in b.links and b.supporting_info_submitted:
+            v.verdict, v.action = "NO_ACTION_AVAILABLE", None
+            v.rules.append(Rule("R1d", f"Tracking is on file and you already sent {b.supporting_info_submitted} supporting note(s); PayPal is reviewing. Do NOT refund.", POLICY["HATEOAS"]))
         elif "provide_supporting_info" in b.links:
             v.verdict, v.action = "RESPOND_WITH_EVIDENCE", "provide_supporting_info"
             v.rules.append(Rule("R1b", "PayPal is reviewing and only accepts supporting information now; add the tracking as a note. Do NOT refund: proof is on file.", POLICY["HATEOAS"]))

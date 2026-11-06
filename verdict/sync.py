@@ -40,6 +40,15 @@ def fetch_bundle(client: PayPalClient, dispute_id: str) -> tuple[EvidenceBundle,
             order_id = ((capture.get("supplementary_data") or {}).get("related_ids") or {}).get("order_id")
             if order_id:
                 order = client.get_order(order_id)
+                for pu in order.get("purchase_units", []):
+                    for t in (pu.get("shipping") or {}).get("trackers", []):
+                        if not t.get("carrier") and t.get("id"):
+                            try:
+                                full = client.get_tracker(t["id"])
+                                t["carrier"], t["tracking_number"] = full.get("carrier", ""), full.get("tracking_number", t.get("tracking_number", ""))
+                                t["status"] = full.get("status", t.get("status", ""))
+                            except PayPalError:
+                                pass
                 _save(f"order_{order_id}", order)
         except PayPalError as e:  # capture may be unreachable (e.g. not ours); engine handles UNKNOWN
             dispute.setdefault("_verdict_warnings", []).append(str(e))

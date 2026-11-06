@@ -98,6 +98,10 @@ class PayPalClient:
     def get_order(self, order_id: str) -> dict:
         return self._request("GET", f"/v2/checkout/orders/{order_id}", action="get_order")
 
+    def get_tracker(self, tracker_id: str) -> dict:
+        """Shipment Tracking API: the only place the carrier name is exposed for an order tracker."""
+        return self._request("GET", f"/v1/shipping/trackers/{tracker_id}", action="get_tracker")
+
     def list_transactions(self, start: str, end: str, transaction_id: str | None = None) -> dict:
         q = f"start_date={start}&end_date={end}&fields=all&page_size=50"
         if transaction_id:
