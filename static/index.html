@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verdict</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F7F4; --card:#FFFFFF; --ink:#1E2A32; --ink-2:#4B5862; --ink-3:#8A949C; --line:#DDE2E0;
+  --refund:#3B5BDB; --respond:#1F7A4D; --wait:#B7791F; --hold:#6B7280; --danger:#B42318;
+  --v:var(--hold);
+}
+*{box-sizing:border-box} html,body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 "Public Sans",system-ui,sans-serif}
+a{color:inherit}
+.app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+aside{border-right:1px solid var(--line);background:var(--card);padding:20px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{font-family:Fraunces,serif;font-weight:700;font-size:26px;letter-spacing:-.01em;margin:0 0 2px}
+.brand small{display:block;font:500 12px/1.3 "Public Sans";color:var(--ink-3);letter-spacing:0}
+.env{margin:14px 0 18px;font-size:12px;color:var(--ink-2)} .env b{font-weight:600}
+.case{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:10px;padding:10px 12px;cursor:pointer;font:inherit;color:inherit}
+.case:hover{background:#F2F4F1} .case.on{border-color:var(--line);background:#F2F4F1}
+.case .id{font-weight:600;font-size:14px} .case .meta{font-size:12px;color:var(--ink-2);display:flex;justify-content:space-between;margin-top:2px}
+.pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2)}
+.pill.act{border-color:var(--respond);color:var(--respond)}
+main{padding:32px 40px 80px;max-width:960px}
+.empty{color:var(--ink-2);max-width:48ch} .empty h2{font-family:Fraunces,serif;font-weight:500;font-size:28px;margin:0 0 8px}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap}
+.head h1{font:600 16px/1.3 "Public Sans";margin:0;color:var(--ink-2)}
+.head .amt{font-family:Fraunces,serif;font-size:22px;font-weight:500}
+.verdict{margin:18px 0 6px;font-family:Fraunces,serif;font-weight:700;font-size:clamp(40px,7vw,64px);line-height:1;letter-spacing:-.02em;color:var(--v)}
+.verdict-sub{color:var(--ink-2);max-width:62ch;margin:0 0 6px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 24px}
+.badge{font-size:12px;padding:4px 10px;border-radius:6px;background:#EEF1EE;color:var(--ink-2)} .badge.warn{background:#FBF1DC;color:#7A4E07}
+section{margin:28px 0}
+h2{font:600 13px/1.3 "Public Sans";color:var(--ink-3);margin:0 0 10px}
+.ledger{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ledger td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top;font-size:14px}
+.ledger tr:first-child td{border-top:0}
+.ledger td:first-child{color:var(--ink-2);width:30%} .ledger td:nth-child(2){font-weight:500}
+.ledger td:last-child{width:16%;text-align:right;white-space:nowrap}
+.ok{color:var(--respond)} .no{color:var(--danger)} .na{color:var(--ink-3)}
+.rule{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--v);border-radius:8px;padding:12px 14px;margin:0 0 8px}
+.rule b{font-weight:600} .rule p{margin:4px 0 0;font-size:13px;color:var(--ink-2)}
+.ev{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ev .opt{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.ev .opt.pick{border-color:var(--v);box-shadow:inset 0 0 0 1px var(--v)}
+.ev .n{font-family:Fraunces,serif;font-size:28px;font-weight:500} .ev small{display:block;color:var(--ink-2);font-size:12px}
+.action{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.action h3{margin:0 0 4px;font:600 16px/1.3 "Public Sans"}
+.action .call{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:#F2F4F1;border-radius:8px;padding:10px 12px;white-space:pre-wrap;word-break:break-word;margin:10px 0}
+textarea{width:100%;min-height:84px;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;resize:vertical}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+button.primary{background:var(--v);color:#fff;border:0;border-radius:8px;padding:10px 16px;font:600 14px "Public Sans";cursor:pointer}
+button.primary:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:none;border:1px solid var(--line);border-radius:8px;padding:9px 14px;font:500 14px "Public Sans";cursor:pointer}
+button:focus-visible,.case:focus-visible{outline:2px solid var(--refund);outline-offset:2px}
+label.chk{display:flex;gap:8px;align-items:center;font-size:14px}
+.note{font-size:13px;color:var(--ink-2)}
+.result{margin-top:12px;padding:12px 14px;border-radius:8px;font-size:14px} .result.ok{background:#E7F3EC;color:#145033} .result.err{background:#FBE9E7;color:#7A2418}
+.facts{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
+.audit{font-size:13px} .audit div{padding:6px 0;border-top:1px solid var(--line)} .audit code{font-size:12px;color:var(--ink-2)}
+.narr{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;max-width:70ch}
+.narr p{margin:0 0 8px} .narr .zh{color:var(--ink-2)}
+.disc{font-size:12.5px;color:var(--ink-3);max-width:70ch;margin-top:30px}
+.lang{margin-left:auto;font-size:12px} .lang button{background:none;border:0;cursor:pointer;color:var(--ink-2);font:inherit;padding:2px 6px} .lang button.on{color:var(--ink);font-weight:600;text-decoration:underline}
+@media (max-width:820px){.app{grid-template-columns:1fr} aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)} main{padding:20px 16px} .ev{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.verdict{animation:in .35s ease-out} @keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <h1 class="brand">Verdict<small>Dispute desk for PayPal sellers</small></h1>
+  <div class="env" id="env">Connecting…</div>
+  <div id="cases"></div>
+</aside>
+<main id="main">
+  <div class="empty"><h2>Pick a case.</h2><p>Verdict reads what PayPal already has on file — seller protection, tracking, the buyer's claim and the actions PayPal allows right now — and tells you whether to refund or respond, and with what.</p></div>
+</main>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const T={en:{REFUND_NOW:"Refund now",RESPOND_WITH_EVIDENCE:"Respond with evidence",OFFER_PARTIAL:"Offer a partial refund",REPLY_AND_WAIT:"Reply and wait",NO_ACTION_AVAILABLE:"Nothing to do yet"},
+         zh:{REFUND_NOW:"现在退款",RESPOND_WITH_EVIDENCE:"提交证据申诉",OFFER_PARTIAL:"提出部分退款",REPLY_AND_WAIT:"回复买家并等待",NO_ACTION_AVAILABLE:"暂时无需操作"}};
+const COLOR={REFUND_NOW:"var(--refund)",RESPOND_WITH_EVIDENCE:"var(--respond)",OFFER_PARTIAL:"var(--wait)",REPLY_AND_WAIT:"var(--wait)",NO_ACTION_AVAILABLE:"var(--hold)"};
+const ACT={accept_claim:"Accept the claim (refund)",provide_evidence:"Submit evidence",provide_supporting_info:"Send supporting information",send_message:"Message the buyer",make_offer:"Make an offer",escalate:"Escalate to PayPal"};
+let lang=localStorage.getItem("verdict.lang")||"en", current=null, data=null;
+const money=(v,c="USD")=>new Intl.NumberFormat("en-US",{style:"currency",currency:c}).format(v);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+async function boot(){
+  const h=await fetch("/api/health").then(r=>r.json());
+  $("#env").innerHTML=`PayPal <b>${h.environment}</b> · Claude explanations <b>${h.llm?"on":"off"}</b>`;
+  const list=await fetch("/api/disputes").then(r=>r.json());
+  $("#cases").innerHTML=list.length?list.map(d=>`<button class="case" data-id="${d.dispute_id}"><div class="id">${d.dispute_id}</div>
+    <div class="meta"><span>${(d.reason||"").replace("MERCHANDISE_OR_SERVICE_","").replaceAll("_"," ").toLowerCase()}</span><span>${d.amount?money(d.amount.value,d.amount.currency_code):""}</span></div>
+    <div class="meta"><span class="pill ${d.bucket==="REQUIRED_ACTION"?"act":""}">${d.bucket==="REQUIRED_ACTION"?"needs your response":(d.status||"").replaceAll("_"," ").toLowerCase()}</span></div></button>`).join("")
+    :`<p class="note">No disputes on this sandbox account. Create one from a buyer sandbox account and refresh.</p>`;
+  document.querySelectorAll(".case").forEach(b=>b.onclick=()=>open(b.dataset.id));
+  const first=list.find(d=>d.bucket==="REQUIRED_ACTION")||list[0]; if(first) open(first.dispute_id);
+}
+async function open(id){
+  current=id; document.querySelectorAll(".case").forEach(b=>b.classList.toggle("on",b.dataset.id===id));
+  $("#main").innerHTML=`<div class="empty"><h2>Reading ${id}…</h2><p>Fetching the dispute, the capture and the order from PayPal.</p></div>`;
+  data=await fetch(`/api/disputes/${id}`).then(r=>r.json()); render();
+}
+function check(ok){return ok===true?`<span class="ok">✓ checks out</span>`:ok===false?`<span class="no">✗ problem</span>`:ok===null?`<span class="na">unknown</span>`:""}
+function render(){
+  const b=data.bundle,v=data.verdict,n=data.narrative; const color=COLOR[v.verdict];
+  document.documentElement.style.setProperty("--v",color);
+  const t=b.trackers[0]; const due=v.deadline_hours!=null?`${Math.floor(v.deadline_hours/24)}d ${Math.round(v.deadline_hours%24)}h left`:null;
+  const sub={REFUND_NOW:"Contesting this one would cost more than it returns. Refunding closes it today and keeps your dispute rate clean.",
+    RESPOND_WITH_EVIDENCE:"PayPal already holds the proof it asks for. Submit it so the case is decided on the record.",
+    OFFER_PARTIAL:"No listing evidence on file; a partial refund usually beats a full loss plus return shipping.",
+    REPLY_AND_WAIT:"Nothing to contest yet. Keep the buyer informed and re-check when the status changes.",
+    NO_ACTION_AVAILABLE:"PayPal is not accepting seller actions on this case right now."}[v.verdict];
+  const ledger=[
+    ["Buyer's claim",(b.reason||"").replaceAll("_"," ").toLowerCase()+(b.buyer_messages[0]?` — “${esc(b.buyer_messages[0])}”`:""),"dispute",undefined],
+    ["Amount at stake",money(b.amount,b.currency),"dispute",undefined],
+    ["Seller protection",`${b.seller_protection_status}${b.seller_protection_categories.length?" · covers "+b.seller_protection_categories.map(c=>c.replaceAll("_"," ").toLowerCase()).join(", "):""}`,"capture",b.seller_protection_status==="ELIGIBLE"?true:b.seller_protection_status==="NOT_ELIGIBLE"?false:null],
+    ["Tracking on file",t?`${t.carrier} ${t.tracking_number} · ${t.status.toLowerCase()}`:"none","order",t?(["SHIPPED","DELIVERED","IN_TRANSIT"].includes(t.status)?true:null):false],
+    ["Ship-to vs PayPal address",b.paypal_ship_to?`${b.paypal_ship_to.address_line_1}, ${b.paypal_ship_to.admin_area_2} ${b.paypal_ship_to.postal_code}`:"no address","order",b.tracker_matches_paypal_address],
+    ["Evidence already sent",b.evidences_submitted.length?b.evidences_submitted.join(", "):"none","dispute",undefined],
+    ["Actions PayPal allows now",v.allowed_now.length?v.allowed_now.map(a=>ACT[a]||a).join(" · "):"none","dispute links",v.allowed_now.length?true:false],
+    ["Response deadline",due||"not set","dispute",v.deadline_hours!=null?(v.deadline_hours>48):null],
+  ];
+  const evContest=v.verdict==="REFUND_NOW"?null:v.expected_value;
+  $("#main").innerHTML=`
+  <div class="head"><h1>${b.dispute_id} · ${b.status.replaceAll("_"," ").toLowerCase()} · ${b.life_cycle_stage.toLowerCase()}</h1><span class="amt">${money(b.amount,b.currency)}</span>
+    <span class="lang"><button class="${lang==="en"?"on":""}" data-l="en">EN</button>/<button class="${lang==="zh"?"on":""}" data-l="zh">中文</button></span></div>
+  <div class="verdict">${T[lang][v.verdict]}</div>
+  <p class="verdict-sub">${lang==="zh"&&n?esc(n.explanation_zh):sub}</p>
+  <div class="badges"><span class="badge">confidence: ${v.confidence}</span>${v.flags.map(f=>`<span class="badge warn">${f.replaceAll("_"," ")}</span>`).join("")}${data.warnings.map(w=>`<span class="badge warn">${esc(w)}</span>`).join("")}</div>
+
+  <section><h2>What PayPal has on file</h2><table class="ledger">${ledger.map(([k,val,src,ok])=>`<tr><td>${k}</td><td>${val}<br><small class="note">from ${src}</small></td><td>${check(ok)}</td></tr>`).join("")}</table></section>
+
+  <section><h2>Why</h2>${v.rules.map(r=>`<div class="rule"><b>${r.id}</b> ${esc(r.text)}<p>Policy: ${esc(r.policy_basis)}</p></div>`).join("")}
+  ${n?`<div class="narr" style="margin-top:12px"><p>${esc(lang==="zh"?n.explanation_zh:n.explanation)}</p>${n.faithful===false?`<p class="note">⚠ explanation failed the faithfulness check (mentions facts not in the file); rules above are authoritative.</p>`:""}</div>`:""}</section>
+
+  <section><h2>Expected value of each path</h2><div class="ev">
+    <div class="opt ${v.verdict==="REFUND_NOW"?"pick":""}"><div class="n">${money(0)}</div><small>Refund now — you lose the ${money(b.amount,b.currency)}, no handling cost, case closed today.</small></div>
+    <div class="opt ${v.verdict!=="REFUND_NOW"&&v.verdict!=="NO_ACTION_AVAILABLE"?"pick":""}"><div class="n">${evContest==null?"—":money(evContest)}</div><small>${v.verdict==="NO_ACTION_AVAILABLE"?"No contest path open.":`Contest — assumes a ${Math.round(v.p_keep*100)}% chance to keep ${money(b.amount,b.currency)} minus ~${money(8)} handling. The % is a stated assumption, not a prediction of PayPal.`}</small></div>
+  </div></section>
+
+  <section><h2>Tell Verdict what you have</h2><div class="facts">
+    ${[["seller_has_signature_proof","Signature on delivery"],["seller_has_listing_evidence","Listing text & photos"],["seller_has_return_policy","Return policy shown at checkout"]].map(([k,l])=>`<label class="chk"><input type="checkbox" data-f="${k}" ${b[k]?"checked":""}> ${l}</label>`).join("")}
+  </div></section>
+
+  <section>${v.action?`<div class="action"><h3>${ACT[v.action]}</h3><p class="note">Verdict will call PayPal only after you confirm. Links are re-checked at that moment.</p>
+    <div class="call">POST /v1/customer/disputes/${b.dispute_id}/${v.action.replaceAll("_","-")}\n${esc(JSON.stringify(previewBody(v,n),null,1))}</div>
+    <textarea id="msg">${esc(n?.buyer_note||v.message_draft)}</textarea>
+    <div class="row"><label class="chk"><input type="checkbox" id="confirm"> I've reviewed this and want Verdict to send it to PayPal</label></div>
+    <div class="row"><button class="primary" id="go" disabled>${ACT[v.action]}</button><button class="ghost" id="refresh">Re-check PayPal</button></div><div id="res"></div></div>`
+    :`<div class="action"><h3>No action to send</h3><p class="note">${v.allowed_now.length?"Verdict's recommendation maps to an action PayPal is not offering right now.":"PayPal's links expose no seller action on this case. Re-check later; status changes within minutes in the sandbox."}</p><div class="row"><button class="ghost" id="refresh">Re-check PayPal</button></div></div>`}</section>
+
+  <section><h2>Audit trail</h2><div class="audit" id="audit">…</div></section>
+  <p class="disc">${esc(v.disclaimer)}</p>`;
+  document.querySelectorAll(".lang button").forEach(x=>x.onclick=()=>{lang=x.dataset.l;localStorage.setItem("verdict.lang",lang);render()});
+  document.querySelectorAll("[data-f]").forEach(c=>c.onchange=async()=>{data=await fetch(`/api/disputes/${current}/facts`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({[c.dataset.f]:c.checked})}).then(r=>r.json());render()});
+  const cf=$("#confirm"),go=$("#go"); if(cf){cf.onchange=()=>go.disabled=!cf.checked;
+    go.onclick=async()=>{go.disabled=true;go.textContent="Sending to PayPal…";
+      const r=await fetch(`/api/disputes/${current}/execute`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:v.action,message:$("#msg").value,confirmed:true})}).then(r=>r.json());
+      const ok=r.result.ok; $("#res").innerHTML=`<div class="result ${ok?"ok":"err"}">${ok?`Sent. PayPal status ${r.result.status_before} → ${r.result.status_after}. Allowed next: ${r.result.links_after.filter(l=>l!=="self").join(", ")||"none"}.`:`PayPal refused: ${esc(r.result.error)}`}</div>`;
+      if(ok){data=r.refreshed;setTimeout(render,1800)} else {go.disabled=false;go.textContent=ACT[v.action]}}}
+  $("#refresh").onclick=()=>open(current);
+  fetch(`/api/audit?dispute_id=${current}`).then(r=>r.json()).then(a=>{$("#audit").innerHTML=a.length?a.slice().reverse().map(e=>`<div><b>${e.ok?"✓":"✗"} ${ACT[e.action]||e.action}</b> · ${new Date(e.ts).toLocaleString()} · verdict ${e.verdict}<br><code>${esc(e.ok?`${e.status_before} → ${e.status_after}`:e.error)}</code></div>`).join(""):`<span class="note">Nothing sent for this case yet.</span>`});
+}
+function previewBody(v,n){
+  if(v.action==="provide_evidence")return{evidences:v.evidence_plan,"evidence-file":"verdict_evidence_summary.txt"};
+  if(v.action==="accept_claim")return{note:"<your note>",accept_claim_type:"REFUND"};
+  if(v.action==="make_offer")return{note:"<your note>",offer_type:"REFUND",offer_amount:"50% of amount"};
+  if(v.action==="provide_supporting_info")return{notes:v.evidence_plan[0]?.notes||v.message_draft};
+  return{message:"<your note>"};
+}
+boot();
+</script>
+</body>
+</html>

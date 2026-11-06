@@ -1,0 +1,12 @@
+[project]
+name = "verdict"
+version = "0.1.0"
+description = "Evidence-based dispute decision copilot for PayPal sellers"
+requires-python = ">=3.11"
+dependencies = ["fastapi>=0.110", "uvicorn[standard]", "httpx>=0.27", "pydantic>=2", "python-multipart", "anthropic>=0.40", "paypal-agent-toolkit>=1.1.0"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "respx"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
