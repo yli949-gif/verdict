@@ -42,9 +42,9 @@ def label(b: EvidenceBundle) -> tuple[str, str]:
                 "RESPOND_WITH_EVIDENCE" if b.seller_has_signature_proof and "provide_evidence" in links else "REFUND_NOW"
             ), "shipped to a different address"
         if has_tracking and not eligible:
-            if t.status.upper() == "DELIVERED" and ("provide_evidence" in links or "provide_supporting_info" in links):
-                return "RESPOND_WITH_EVIDENCE", "delivered proof, not protected: PayPal reviews on merits"
-            return "REPLY_AND_WAIT", "tracking but not protected: inform buyer"
+            if "provide_evidence" in links or "provide_supporting_info" in links:
+                return "RESPOND_WITH_EVIDENCE", "tracking on file, not protected: submit it anyway (free), PayPal reviews on merits"
+            return "REPLY_AND_WAIT", "tracking but not protected and no submit link: inform buyer"
         if has_tracking and b.expected_delivery and b.expected_delivery > b.now:
             return "REPLY_AND_WAIT", "in transit before expected date"
         if b.evidences_submitted:
@@ -73,4 +73,10 @@ def label(b: EvidenceBundle) -> tuple[str, str]:
             return "RESPOND_WITH_EVIDENCE", "covered unauthorized claim with shipment proof"
         return "REFUND_NOW", "unauthorized without coverage/proof"
 
+    if (
+        b.reason == "CREDIT_NOT_PROCESSED"
+        and b.seller_refund_already_issued
+        and ("provide_evidence" in links or "provide_supporting_info" in links)
+    ):
+        return "RESPOND_WITH_EVIDENCE", "refund already issued: show proof of refund"
     return "REPLY_AND_WAIT", "uncommon reason: gather facts"

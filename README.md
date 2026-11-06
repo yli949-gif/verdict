@@ -10,28 +10,33 @@ Built for the PayPal AI Hackathon (Nov 2026). Runs against the PayPal **sandbox*
 
 1. **Reads** the dispute, the capture (`seller_protection.status`), the order (ship-to address, trackers) and the carrier record. Nothing is typed in by hand.
 2. **Decides** with a deterministic, policy-cited rule engine: `REFUND_NOW · RESPOND_WITH_EVIDENCE · OFFER_PARTIAL · REPLY_AND_WAIT · NO_ACTION_AVAILABLE`, with the rule ids that fired, the policy text behind each, an expected-value comparison, and a confidence level.
-3. **Gates** every action on PayPal's own `links[]` / `allowed_response_options` — the only authoritative list of what is allowed at that moment. The engine never recommends an action PayPal would refuse (measured: 0% unsafe actions on 95 cases).
+3. **Gates** every action on PayPal's own `links[]` / `allowed_response_options` — the only authoritative list of what is allowed at that moment — and validates every outbound body against PayPal's OpenAPI spec before it leaves the process. The engine never recommends an action PayPal would refuse (0% unsafe actions on 95 cases; confirmed by PayPal on 11/11 live probes).
 4. **Executes** only after a human confirms: `provide-evidence` (multipart with tracking + a generated evidence summary file), `accept-claim`, `make-offer`, `send-message`, `escalate`, `provide-supporting-info`. Every call is written to an audit log with the status transition it caused.
-5. **Explains** in English or 中文 with Claude (optional) — the model can rewrite the explanation and the buyer note but never the verdict, and its output is checked against the evidence bundle for invented tracking numbers or contradictions.
+5. **Shows what would change the verdict** (add tracking → respond, EV +$x) and how stable the verdict is under its own assumptions.
+6. **Explains** in English or 中文 with Claude (optional) — the model can rewrite the explanation and the buyer note but never the verdict, and its output is checked against the evidence bundle for invented tracking numbers or contradictions.
 
 A verdict is a **recommendation under PayPal's published policies**. PayPal makes the decision; Verdict never claims to predict it.
 
 ## Results
 
-From `python -m eval.run` (95 cases: 3 captured from the sandbox, 77 synthetic bundles on the same schema, 15 messy/adversarial cases incl. prompt-injection in buyer messages). Ground truth is an independent decision table (`eval/oracle.py`) written from PayPal's policy pages and hand-reviewed — *what policy says the seller should do*, not what PayPal will decide.
+From `python -m eval.run` (95 cases: 3 captured from the sandbox, 77 synthetic bundles on the same schema, 15 messy/adversarial cases incl. prompt-injection in buyer messages). Ground truth is an independent decision table (`eval/oracle.py`) written from PayPal's policy pages — *what policy says the seller should do*, not what PayPal will decide. How the numbers are made, and every judgment call: [`eval/README.md`](eval/README.md).
 
 | system | accuracy | unsafe-action rate | over-refund | under-refund |
 |---|---|---|---|---|
 | refund everything | 56% | 0% | 31% | 0% |
 | fight everything PayPal lets you fight | 45% | 0% | 0% | 33% |
 | trust `seller_protection` alone | 33% | **37%** | 8% | 26% |
-| Claude alone, zero-shot on the same bundle (`claude-sonnet-5-5`) | 62% | 4% | 1% | 21% |
-| **Verdict (rules)** | **99%** | **0%** | 1% | 0% |
+| Claude alone, zero-shot on the same bundle (`claude-sonnet-5-5`) | 66% | 3% | 2% | 20% |
+| **Verdict (rules)** | **100%** | **0%** | 0% | 0% |
 
-- *unsafe action*: recommending a PayPal call the dispute's links don't allow (PayPal returns `ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE`).
-- *over-refund*: refunding when policy says respond/offer/wait. *under-refund*: contesting when policy says refund.
-- The single Verdict miss is a $0 degenerate case. The LLM-only baseline is competent on clean cases but contests 21% of cases policy says to refund (the expensive failure), and on the two prompt-injection cases it was swayed once (waited instead of refunding) — the rules were not. Full table, per-reason breakdown and every disagreement: [`eval/results.md`](eval/results.md).
-- Live sandbox replay (2026-11-06): `send-message`, `provide-evidence` (multipart + file), `provide-supporting-info`, `escalate` all returned 200 and moved the dispute as the engine expected; see `docs/policy_sources.md` for the observed state machine.
+- *unsafe action*: recommending a PayPal call the dispute's links don't allow (PayPal returns `ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE`). *over-refund*: refunding when policy says respond/offer/wait. *under-refund*: contesting when policy says refund.
+- 100% against our own table is expected (the engine implements the policy); the number that matters is what is **not** ours grading us:
+  - **PayPal itself**: 11/11 probes that bypassed Verdict's gate were rejected by the sandbox and left the dispute unchanged ([`eval/live_gate_check.md`](eval/live_gate_check.md)).
+  - **PayPal's OpenAPI spec**: every evidence plan the engine can generate validates against the published schema (Hypothesis, 400 random bundles; `verdict/contract.py`).
+  - **A second rater**: a different model labelling from the policy text alone agrees with the table at κ = 0.57–0.62 across two runs ("moderate–substantial"); the disagreements were adjudicated by hand and two changed the engine ([`eval/second_rater.md`](eval/second_rater.md), [`eval/README.md`](eval/README.md)).
+  - **Robustness**: 90/95 verdicts are unchanged across a 20-point grid of the p_keep × handling-cost assumptions; the 5 sensitive ones are flagged in the UI.
+- The LLM-only baseline is competent on clean cases but contests 20% of cases policy says to refund (the expensive failure) and was swayed once by an injected buyer message; the rules were not.
+- Live sandbox replay (2026-11-06): `send-message`, `provide-evidence` (multipart + file), `provide-supporting-info`, `escalate` all returned 200 and moved the dispute as the state model predicts (`verdict/statemachine.py`, `docs/policy_sources.md`).
 
 ## How it decides (short version)
 
@@ -55,7 +60,7 @@ cp .env.example .env                     # add PAYPAL_CLIENT_ID / PAYPAL_CLIENT_
 uvicorn verdict.app:app --port 8787      # open http://localhost:8787
 ```
 CLI: `python -m verdict.cli list` · `show <dispute_id>` · `execute <dispute_id> --yes`.
-Tests: `pytest`. Evaluation: `python -m eval.generate_cases && python -m eval.run`.
+Tests: `pytest` (incl. Hypothesis). Lint/types: `ruff check . && mypy verdict`. Evaluation: `python -m eval.generate_cases && python -m eval.run`; live checks: `python -m eval.live_gate_check`, `python -m eval.second_rater`.
 Optional: set `ANTHROPIC_API_KEY` for Claude explanations and the `llm_only` baseline.
 
 To create test disputes: pay a sandbox order from a sandbox *personal* account, then file "Report a problem → I haven't received the item" from that account's Activity page. The dispute reaches `WAITING_FOR_SELLER_RESPONSE` in ~2–3 minutes. (The documented `POST /v1/customer/disputes` sandbox endpoint rejected every documented body in our tests; details in `docs/policy_sources.md`.)
@@ -83,8 +88,11 @@ verdict/actions.py    executor + audit log
 verdict/narrative.py  optional Claude explanation with faithfulness check
 verdict/app.py        FastAPI API + static/index.html UI
 verdict/tools.py      agent-framework tool definitions
-eval/                 oracle.py (decision table), generate_cases.py, run.py, cases/, results.md
-tests/                engine, client, multipart, fixtures from real sandbox JSON
+verdict/contract.py   outbound payload validation against PayPal's OpenAPI spec (docs/paypal-spec/)
+verdict/statemachine.py observed dispute states/transitions (test generator + documentation)
+eval/                 oracle.py, generate_cases.py, run.py, live_gate_check.py, second_rater.py, cases/, *.md reports
+tests/                engine, client, multipart, Hypothesis invariants, fixtures from real sandbox JSON
+.github/workflows/    CI: ruff, mypy, pytest, eval regression gate (acc ≥ 98%, unsafe = 0), gitleaks
 ```
 
 MIT © 2026 Yiyao (Ella) Li

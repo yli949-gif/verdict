@@ -144,6 +144,27 @@ def decide(b: EvidenceBundle, handling_cost: float | None = None, p_scale: float
         _decide_snad(b, v, cost)
     elif b.reason == UNAUTH:
         _decide_unauth(b, v, full_proof, cost)
+    elif (
+        b.reason == "CREDIT_NOT_PROCESSED"
+        and b.seller_refund_already_issued
+        and ("provide_evidence" in b.links or "provide_supporting_info" in b.links)
+    ):
+        v.verdict, v.confidence, v.p_keep = "RESPOND_WITH_EVIDENCE", "high", _P["proof_full"]
+        v.action = "provide_evidence" if "provide_evidence" in b.links else "provide_supporting_info"
+        v.flags.append("auto_evidence")
+        v.evidence_plan = [
+            {
+                "evidence_type": "OTHER",
+                "notes": "A refund for this transaction was already issued through PayPal; see the refund on the transaction.",
+            }
+        ]
+        v.rules.append(
+            Rule(
+                "R12",
+                "Buyer says a promised credit was not processed, but the seller already refunded: show the refund instead of paying twice.",
+                POLICY["INQUIRY"],
+            )
+        )
     else:
         v.verdict, v.action, v.confidence, v.p_keep = "REPLY_AND_WAIT", "send_message", "low", _P["wait"]
         v.rules.append(
@@ -251,7 +272,8 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
         )
         return
     if t and t.tracking_number and t.status.upper() in ("SHIPPED", "IN_TRANSIT", "DELIVERED") and not covered:
-        # tracking exists but protection says NOT_ELIGIBLE (e.g. direct card). PayPal still weighs delivery proof.
+        # tracking exists but protection says NOT_ELIGIBLE (e.g. direct card). PayPal still weighs delivery proof,
+        # and the proof is already in PayPal's data, so submitting it is free (adjudicated with second rater, eval/README.md).
         plan = [
             {
                 "evidence_type": "PROOF_OF_FULFILLMENT" if t.status.upper() == "DELIVERED" else "ONLINE_TRACKING_INFORMATION",
@@ -260,14 +282,15 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
             }
         ]
         v.flags.append("auto_evidence")
-        if t.status.upper() == "DELIVERED" and ("provide_evidence" in b.links or "provide_supporting_info" in b.links):
-            v.verdict, v.confidence, v.p_keep = "RESPOND_WITH_EVIDENCE", "medium", _P["proof_partial"]
+        if "provide_evidence" in b.links or "provide_supporting_info" in b.links:
+            v.verdict, v.confidence = "RESPOND_WITH_EVIDENCE", "medium" if t.status.upper() == "DELIVERED" else "low"
+            v.p_keep = _P["proof_partial"] if t.status.upper() == "DELIVERED" else _P["wait"]
             v.action = "provide_evidence" if "provide_evidence" in b.links else "provide_supporting_info"
             v.evidence_plan = plan
             v.rules.append(
                 Rule(
                     "R4c",
-                    "Delivered tracking exists but the transaction is NOT_ELIGIBLE for Seller Protection; PayPal still reviews delivery proof on the merits.",
+                    "Tracking exists but the transaction is NOT_ELIGIBLE for Seller Protection; PayPal still reviews shipment proof on the merits, and the proof is already on file.",
                     POLICY["SP_INELIGIBLE"],
                 )
             )
@@ -281,9 +304,8 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
             )
         )
         v.message_draft = _msg_in_transit(b, t)
-        if "send_message" not in b.links and "provide_evidence" in b.links:
-            v.action = "provide_evidence"
-            v.evidence_plan = plan
+        if "send_message" not in b.links:
+            v.action = None
         return
     if t and t.tracking_number and t.status.upper() in ("SHIPPED", "IN_TRANSIT") and b.expected_delivery and b.expected_delivery > b.now:
         v.verdict, v.action, v.confidence, v.p_keep = "REPLY_AND_WAIT", "send_message", "medium", _P["wait"]

@@ -1,8 +1,8 @@
 {
  "id": "case-091",
  "source": "messy",
- "label": "REPLY_AND_WAIT",
- "label_reason": "uncommon reason: gather facts",
+ "label": "RESPOND_WITH_EVIDENCE",
+ "label_reason": "refund already issued: show proof of refund",
  "reviewed_by": "",
  "notes": "buyer says refund not processed",
  "bundle": {
