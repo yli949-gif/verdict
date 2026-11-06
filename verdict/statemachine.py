@@ -4,9 +4,10 @@ This is *descriptive*, not authoritative: at runtime the engine trusts the live 
 exists so tests can (a) generate realistic link sets per state, (b) check that every seller action
 Verdict can take is one the state admits, and (c) document what we expect to happen after each call.
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 SELLER_ACTIONS = {"accept_claim", "provide_evidence", "make_offer", "send_message", "escalate", "provide_supporting_info"}
 
@@ -23,12 +24,27 @@ class State:
 STATES: dict[str, State] = {
     "OPEN_NEW": State("OPEN", "INQUIRY", frozenset(), "just filed; actions appear after ~2 min"),
     "REVIEW_INQUIRY": State("UNDER_REVIEW", "INQUIRY", frozenset(), "PayPal automation; transient"),
-    "SELLER_TURN": State("WAITING_FOR_SELLER_RESPONSE", "INQUIRY",
-                         frozenset({"accept_claim", "provide_evidence", "send_message", "escalate", "make_offer"}), "due date +20d"),
-    "SELLER_TURN_EVIDENCE_ONLY": State("WAITING_FOR_SELLER_RESPONSE", "INQUIRY", frozenset({"accept_claim", "provide_evidence"}), "after prior responses"),
-    "BUYER_TURN": State("WAITING_FOR_BUYER_RESPONSE", "INQUIRY", frozenset({"accept_claim", "escalate", "send_message", "provide_evidence"}), "after seller message"),
-    "BUYER_TURN_NO_EVIDENCE": State("WAITING_FOR_BUYER_RESPONSE", "INQUIRY", frozenset({"accept_claim", "escalate", "send_message"}), "after evidence submitted"),
-    "REVIEW_CHARGEBACK": State("UNDER_REVIEW", "CHARGEBACK", frozenset({"provide_supporting_info", "accept_claim"}), "tracking on order before filing"),
+    "SELLER_TURN": State(
+        "WAITING_FOR_SELLER_RESPONSE",
+        "INQUIRY",
+        frozenset({"accept_claim", "provide_evidence", "send_message", "escalate", "make_offer"}),
+        "due date +20d",
+    ),
+    "SELLER_TURN_EVIDENCE_ONLY": State(
+        "WAITING_FOR_SELLER_RESPONSE", "INQUIRY", frozenset({"accept_claim", "provide_evidence"}), "after prior responses"
+    ),
+    "BUYER_TURN": State(
+        "WAITING_FOR_BUYER_RESPONSE",
+        "INQUIRY",
+        frozenset({"accept_claim", "escalate", "send_message", "provide_evidence"}),
+        "after seller message",
+    ),
+    "BUYER_TURN_NO_EVIDENCE": State(
+        "WAITING_FOR_BUYER_RESPONSE", "INQUIRY", frozenset({"accept_claim", "escalate", "send_message"}), "after evidence submitted"
+    ),
+    "REVIEW_CHARGEBACK": State(
+        "UNDER_REVIEW", "CHARGEBACK", frozenset({"provide_supporting_info", "accept_claim"}), "tracking on order before filing"
+    ),
     "RESOLVED": State("RESOLVED", "INQUIRY", frozenset(), "closed"),
 }
 

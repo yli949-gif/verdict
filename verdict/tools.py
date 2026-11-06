@@ -5,6 +5,7 @@ upstreamed: the official Python toolkit (1.1.0) has no dispute tools at all.
 Each tool is {"method", "name", "description", "args_schema", "execute"}; `execute(client, params)`
 returns a JSON string. State-changing tools require `confirmed: true` — an agent cannot skip the human.
 """
+
 from __future__ import annotations
 
 import json
@@ -19,7 +20,9 @@ from .sync import fetch_bundle, list_dispute_ids
 
 
 class ListDisputes(BaseModel):
-    dispute_state: str | None = Field(None, description="REQUIRED_ACTION | REQUIRED_OTHER_PARTY_ACTION | UNDER_PAYPAL_REVIEW | RESOLVED | OPEN_INQUIRIES")
+    dispute_state: str | None = Field(
+        None, description="REQUIRED_ACTION | REQUIRED_OTHER_PARTY_ACTION | UNDER_PAYPAL_REVIEW | RESOLVED | OPEN_INQUIRIES"
+    )
 
 
 class DisputeId(BaseModel):
@@ -28,7 +31,10 @@ class DisputeId(BaseModel):
 
 class ExecuteVerdict(BaseModel):
     dispute_id: str
-    action: str | None = Field(None, description="Override the recommended action: accept_claim | provide_evidence | send_message | make_offer | escalate | provide_supporting_info")
+    action: str | None = Field(
+        None,
+        description="Override the recommended action: accept_claim | provide_evidence | send_message | make_offer | escalate | provide_supporting_info",
+    )
     message: str | None = Field(None, description="Buyer-facing note / evidence notes")
     confirmed: bool = Field(False, description="Must be true. Set only after a human reviewed the verdict.")
 
@@ -38,7 +44,9 @@ def _list(client: PayPalClient, params: dict) -> str:
     items = list_dispute_ids(client)
     if p.dispute_state:
         items = [d for d in items if d.get("_state_bucket") == p.dispute_state]
-    return json.dumps([{k: d.get(k) for k in ("dispute_id", "reason", "status", "dispute_state", "dispute_amount", "update_time")} for d in items])
+    return json.dumps(
+        [{k: d.get(k) for k in ("dispute_id", "reason", "status", "dispute_state", "dispute_amount", "update_time")} for d in items]
+    )
 
 
 def _get_verdict(client: PayPalClient, params: dict) -> str:
@@ -56,19 +64,41 @@ def _execute(client: PayPalClient, params: dict) -> str:
 
 
 tools: list[dict[str, Any]] = [
-    {"method": "list_disputes", "name": "List Disputes", "description": "List the merchant's PayPal disputes, actionable first.",
-     "args_schema": ListDisputes, "execute": _list, "actions": {"disputes": {"read": True}}},
-    {"method": "get_dispute_verdict", "name": "Get Dispute Verdict",
-     "description": "Fetch dispute + capture + order from PayPal, cross-check seller protection, tracking, address and allowed actions, and return an evidence-based recommendation (never a prediction of PayPal's decision).",
-     "args_schema": DisputeId, "execute": _get_verdict, "actions": {"disputes": {"read": True}}},
-    {"method": "execute_dispute_verdict", "name": "Execute Dispute Verdict",
-     "description": "After human confirmation, perform the recommended PayPal dispute action. Refuses anything PayPal's HATEOAS links do not currently allow.",
-     "args_schema": ExecuteVerdict, "execute": _execute, "actions": {"disputes": {"write": True}}},
+    {
+        "method": "list_disputes",
+        "name": "List Disputes",
+        "description": "List the merchant's PayPal disputes, actionable first.",
+        "args_schema": ListDisputes,
+        "execute": _list,
+        "actions": {"disputes": {"read": True}},
+    },
+    {
+        "method": "get_dispute_verdict",
+        "name": "Get Dispute Verdict",
+        "description": "Fetch dispute + capture + order from PayPal, cross-check seller protection, tracking, address and allowed actions, and return an evidence-based recommendation (never a prediction of PayPal's decision).",
+        "args_schema": DisputeId,
+        "execute": _get_verdict,
+        "actions": {"disputes": {"read": True}},
+    },
+    {
+        "method": "execute_dispute_verdict",
+        "name": "Execute Dispute Verdict",
+        "description": "After human confirmation, perform the recommended PayPal dispute action. Refuses anything PayPal's HATEOAS links do not currently allow.",
+        "args_schema": ExecuteVerdict,
+        "execute": _execute,
+        "actions": {"disputes": {"write": True}},
+    },
 ]
 
 
 def as_openai_functions() -> list[dict]:
-    return [{"type": "function", "function": {"name": t["method"], "description": t["description"], "parameters": t["args_schema"].model_json_schema()}} for t in tools]
+    return [
+        {
+            "type": "function",
+            "function": {"name": t["method"], "description": t["description"], "parameters": t["args_schema"].model_json_schema()},
+        }
+        for t in tools
+    ]
 
 
 def as_anthropic_tools() -> list[dict]:

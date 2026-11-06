@@ -1,4 +1,5 @@
 """Configuration: everything secret comes from environment variables (or a local .env)."""
+
 from __future__ import annotations
 
 import os

@@ -7,10 +7,10 @@ strict as PayPal, and no rejected call changes state. Writes eval/live_gate_chec
 
 Run: python -m eval.live_gate_check
 """
+
 from __future__ import annotations
 
-import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from verdict.paypal import PayPalClient, PayPalError, encode_multipart
@@ -22,7 +22,11 @@ BODIES = {
     "send_message": ("json", "/send-message", {"message": "gate check (sandbox)"}),
     "escalate": ("json", "/escalate", {"note": "gate check (sandbox)"}),
     "accept_claim": ("json", "/accept-claim", {"note": "gate check (sandbox)", "accept_claim_type": "REFUND"}),
-    "make_offer": ("json", "/make-offer", {"note": "gate check (sandbox)", "offer_type": "REFUND", "offer_amount": {"currency_code": "USD", "value": "1.00"}}),
+    "make_offer": (
+        "json",
+        "/make-offer",
+        {"note": "gate check (sandbox)", "offer_type": "REFUND", "offer_amount": {"currency_code": "USD", "value": "1.00"}},
+    ),
     "provide_evidence": ("mp", "/provide-evidence", {"evidences": [{"evidence_type": "OTHER", "notes": "gate check (sandbox)"}]}),
     "provide_supporting_info": ("mp", "/provide-supporting-info", {"notes": "gate check (sandbox)"}),
 }
@@ -34,7 +38,7 @@ def main() -> None:
     for d in list_dispute_ids(c):
         did = d["dispute_id"]
         full = c.get_dispute(did)
-        links = {l.get("rel") for l in full.get("links", [])}
+        links = {lk.get("rel") for lk in full.get("links", [])}
         for action in sorted(SELLER_ACTIONS - links):
             kind, path, body = BODIES[action]
             try:
@@ -47,11 +51,24 @@ def main() -> None:
             except PayPalError as e:
                 rows.append((did, full.get("status"), action, f"HTTP {e.status}", e.issue))
         after = c.get_dispute(did)
-        rows.append((did, full.get("status"), "— state after probes —", after.get("status"), "unchanged" if after.get("status") == full.get("status") else "CHANGED"))
-    L = [f"# Live gate check — {datetime.now(timezone.utc).isoformat(timespec='minutes')}", "",
-         "For every real sandbox dispute, every seller action **not** in its `links[]` was sent to PayPal with Verdict's gate bypassed.",
-         "Expected: PayPal rejects all of them and the dispute status is unchanged afterwards.", "",
-         "| dispute | status | action not in links | PayPal answered | issue |", "|---|---|---|---|---|"]
+        rows.append(
+            (
+                did,
+                full.get("status"),
+                "— state after probes —",
+                after.get("status"),
+                "unchanged" if after.get("status") == full.get("status") else "CHANGED",
+            )
+        )
+    L = [
+        f"# Live gate check — {datetime.now(UTC).isoformat(timespec='minutes')}",
+        "",
+        "For every real sandbox dispute, every seller action **not** in its `links[]` was sent to PayPal with Verdict's gate bypassed.",
+        "Expected: PayPal rejects all of them and the dispute status is unchanged afterwards.",
+        "",
+        "| dispute | status | action not in links | PayPal answered | issue |",
+        "|---|---|---|---|---|",
+    ]
     L += [f"| {a} | {b} | {c_} | {d_} | {e} |" for a, b, c_, d_, e in rows]
     probes = [r for r in rows if not r[2].startswith("—")]
     rejected = sum(1 for r in probes if r[3] != "ACCEPTED (!)")

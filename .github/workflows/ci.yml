@@ -1,0 +1,28 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install -r requirements.lock && pip install -e .
+      - run: ruff check verdict eval tests && ruff format --check verdict eval tests
+      - run: mypy verdict
+      - run: pytest -q
+      - name: evaluation regression gate (no network, no LLM)
+        run: |
+          python -m eval.generate_cases
+          python -m eval.run --no-llm > /tmp/eval.txt
+          python - <<'PY'
+          import re, sys
+          t = open('/tmp/eval.txt').read()
+          m = re.search(r"\| verdict \| \*\*(\d+)%\*\* \| (\d+)% ", t)
+          acc, unsafe = int(m.group(1)), int(m.group(2))
+          print(f"verdict accuracy {acc}% unsafe {unsafe}%")
+          sys.exit(0 if acc >= 98 and unsafe == 0 else 1)
+          PY
+      - name: secrets scan
+        uses: gitleaks/gitleaks-action@v2
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }

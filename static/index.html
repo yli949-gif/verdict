@@ -132,7 +132,7 @@ function render(){
     <span class="lang"><button class="${lang==="en"?"on":""}" data-l="en">EN</button>/<button class="${lang==="zh"?"on":""}" data-l="zh">中文</button></span></div>
   <div class="verdict">${T[lang][v.verdict]}</div>
   <p class="verdict-sub">${lang==="zh"&&n?esc(n.explanation_zh):sub}</p>
-  <div class="badges"><span class="badge">confidence: ${v.confidence}</span>${v.flags.map(f=>`<span class="badge warn">${f.replaceAll("_"," ")}</span>`).join("")}${data.warnings.map(w=>`<span class="badge warn">${esc(w)}</span>`).join("")}</div>
+  <div class="badges"><span class="badge">confidence: ${v.confidence}</span><span class="badge ${data.robustness.robust?"":"warn"}" title="Share of a 20-point grid over p_keep × handling cost that keeps this verdict">${data.robustness.robust?"stable under assumptions":"sensitive to assumptions"} · ${Math.round(data.robustness.agreement*100)}%</span>${v.flags.map(f=>`<span class="badge warn">${f.replaceAll("_"," ")}</span>`).join("")}${data.warnings.map(w=>`<span class="badge warn">${esc(w)}</span>`).join("")}</div>
 
   <section><h2>What PayPal has on file</h2><table class="ledger">${ledger.map(([k,val,src,ok])=>`<tr><td>${k}</td><td>${val}<br><small class="note">from ${src}</small></td><td>${check(ok)}</td></tr>`).join("")}</table></section>
 
@@ -144,6 +144,7 @@ function render(){
     <div class="opt ${v.verdict!=="REFUND_NOW"&&v.verdict!=="NO_ACTION_AVAILABLE"?"pick":""}"><div class="n">${evContest==null?"—":money(evContest)}</div><small>${v.verdict==="NO_ACTION_AVAILABLE"?"No contest path open.":`Contest — assumes a ${Math.round(v.p_keep*100)}% chance to keep ${money(b.amount,b.currency)} minus ~${money(8)} handling. The % is a stated assumption, not a prediction of PayPal.`}</small></div>
   </div></section>
 
+  ${data.counterfactuals.length?`<section><h2>What would change this</h2>${data.counterfactuals.map(c=>`<div class="rule" style="border-left-color:var(--ink-3)"><b>${esc(c.change)}</b> → ${T[lang][c.verdict]}${c.ev_delta?` <span class="note">(EV ${c.ev_delta>0?"+":""}${money(c.ev_delta)})</span>`:""}</div>`).join("")}</section>`:""}
   <section><h2>Tell Verdict what you have</h2><div class="facts">
     ${[["seller_has_signature_proof","Signature on delivery"],["seller_has_listing_evidence","Listing text & photos"],["seller_has_return_policy","Return policy shown at checkout"]].map(([k,l])=>`<label class="chk"><input type="checkbox" data-f="${k}" ${b[k]?"checked":""}> ${l}</label>`).join("")}
   </div></section>

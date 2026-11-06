@@ -8,6 +8,7 @@ as a 400 in production.
 The spec's requestBody blocks are inconsistent (they list only the file part for multipart
 endpoints), so we map each action to the component schema of its JSON content explicitly.
 """
+
 from __future__ import annotations
 
 import json
@@ -54,19 +55,40 @@ NOTE = {"type": "string", "minLength": 1, "maxLength": 2000}
 
 # action -> JSON schema for the JSON body (or the multipart `input` part)
 SCHEMAS: dict[str, dict[str, Any]] = {
-    "make_offer": {"allOf": [_schema("#/components/schemas/make_offer"),
-                             {"required": ["note", "offer_type"], "properties": {"offer_type": {"enum": _enum("offer_type")}}}]},
+    "make_offer": {
+        "allOf": [
+            _schema("#/components/schemas/make_offer"),
+            {"required": ["note", "offer_type"], "properties": {"offer_type": {"enum": _enum("offer_type")}}},
+        ]
+    },
     "escalate": {"allOf": [_schema("#/components/schemas/escalate"), {"required": ["note"]}]},
     "send_message": {"type": "object", "required": ["message"], "properties": {"message": NOTE}, "additionalProperties": False},
-    "accept_claim": {"type": "object", "required": ["note", "accept_claim_type"], "additionalProperties": False,
-                     "properties": {"note": NOTE, "accept_claim_type": {"enum": _enum("accept_claim_type")},
-                                    "refund_amount": _schema("#/components/schemas/money"),
-                                    "return_shipping_address": _schema("#/components/schemas/address_portable"),
-                                    "invoice_id": {"type": "string", "maxLength": 127}}},
-    "provide_evidence": {"type": "object", "required": ["evidences"], "additionalProperties": False,
-                         "properties": {"evidences": {"type": "array", "minItems": 1, "maxItems": 100,
-                                                      "items": {"allOf": [_schema("#/components/schemas/evidence"), {"required": ["evidence_type"]}]}},
-                                        "return_shipping_address": _schema("#/components/schemas/address_portable")}},
+    "accept_claim": {
+        "type": "object",
+        "required": ["note", "accept_claim_type"],
+        "additionalProperties": False,
+        "properties": {
+            "note": NOTE,
+            "accept_claim_type": {"enum": _enum("accept_claim_type")},
+            "refund_amount": _schema("#/components/schemas/money"),
+            "return_shipping_address": _schema("#/components/schemas/address_portable"),
+            "invoice_id": {"type": "string", "maxLength": 127},
+        },
+    },
+    "provide_evidence": {
+        "type": "object",
+        "required": ["evidences"],
+        "additionalProperties": False,
+        "properties": {
+            "evidences": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 100,
+                "items": {"allOf": [_schema("#/components/schemas/evidence"), {"required": ["evidence_type"]}]},
+            },
+            "return_shipping_address": _schema("#/components/schemas/address_portable"),
+        },
+    },
     "provide_supporting_info": {"type": "object", "required": ["notes"], "properties": {"notes": NOTE}, "additionalProperties": False},
 }
 
@@ -79,8 +101,10 @@ def validate(action: str, payload: dict) -> None:
     schema = SCHEMAS.get(action)
     if schema is None:
         return
-    errors = [f"{'/'.join(str(p) for p in e.absolute_path) or '$'}: {e.message[:120]}"
-              for e in sorted(Draft202012Validator(schema, registry=registry()).iter_errors(payload), key=lambda e: list(e.absolute_path))]
+    errors = [
+        f"{'/'.join(str(p) for p in e.absolute_path) or '$'}: {e.message[:120]}"
+        for e in sorted(Draft202012Validator(schema, registry=registry()).iter_errors(payload), key=lambda e: list(e.absolute_path))
+    ]
     if action == "provide_evidence":  # semantic rule stated in the evidence schema description
         for i, ev in enumerate(payload.get("evidences", [])):
             need = NEEDS_EVIDENCE_INFO.get(ev.get("evidence_type", ""))
@@ -95,8 +119,11 @@ def validate(action: str, payload: dict) -> None:
 
 def carrier_for_paypal(carrier: str) -> dict:
     """Map a carrier string from Orders/Shipment Tracking onto the Disputes carrier_name enum."""
-    allowed = set(_enum("carrier_name") if "carrier_name" in spec()["components"]["schemas"] else
-                  spec()["components"]["schemas"]["tracking_info"]["properties"]["carrier_name"]["enum"])
+    allowed = set(
+        _enum("carrier_name")
+        if "carrier_name" in spec()["components"]["schemas"]
+        else spec()["components"]["schemas"]["tracking_info"]["properties"]["carrier_name"]["enum"]
+    )
     c = (carrier or "").upper().replace(" ", "_")
     if c in allowed:
         return {"carrier_name": c}

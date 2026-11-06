@@ -2,22 +2,23 @@
 
 Flow: re-fetch the dispute (links may have changed) → require_link → call → audit → re-fetch.
 """
+
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from .config import settings
-from .engine import Verdict
 from .contract import ContractError
+from .engine import Verdict
 from .paypal import ActionNotAllowed, PayPalClient, PayPalError
 
 AUDIT = settings.data_dir / "audit.jsonl"
 
 
 def audit(entry: dict) -> None:
-    entry = {"ts": datetime.now(timezone.utc).isoformat(), **entry}
+    entry = {"ts": datetime.now(UTC).isoformat(), **entry}
     with AUDIT.open("a") as f:
         f.write(json.dumps(entry) + "\n")
 
@@ -25,15 +26,24 @@ def audit(entry: dict) -> None:
 def read_audit(dispute_id: str | None = None, limit: int = 200) -> list[dict]:
     if not AUDIT.exists():
         return []
-    rows = [json.loads(l) for l in AUDIT.read_text().splitlines() if l.strip()]
+    rows = [json.loads(line) for line in AUDIT.read_text().splitlines() if line.strip()]
     if dispute_id:
         rows = [r for r in rows if r.get("dispute_id") == dispute_id]
     return rows[-limit:]
 
 
-def execute(client: PayPalClient, verdict: Verdict, *, action: str | None = None, message: str | None = None,
-            evidence_plan: list[dict] | None = None, accept_claim_type: str | None = None,
-            offer_amount: float | None = None, confirmed: bool = False, actor: str = "ui") -> dict:
+def execute(
+    client: PayPalClient,
+    verdict: Verdict,
+    *,
+    action: str | None = None,
+    message: str | None = None,
+    evidence_plan: list[dict] | None = None,
+    accept_claim_type: str | None = None,
+    offer_amount: float | None = None,
+    confirmed: bool = False,
+    actor: str = "ui",
+) -> dict:
     """Returns {ok, action, request, response, dispute_after}. Raises nothing; errors are in the result + audit."""
     action = action or verdict.action
     if not confirmed:
@@ -66,7 +76,11 @@ def execute(client: PayPalClient, verdict: Verdict, *, action: str | None = None
             allowed = ((dispute.get("allowed_response_options") or {}).get("make_offer") or {}).get("offer_types") or ["REFUND"]
             otype = "REFUND" if "REFUND" in allowed else allowed[0]
             amt = offer_amount if offer_amount is not None else round(float((dispute.get("dispute_amount") or {}).get("value", 0)) / 2, 2)
-            req = {"note": message or verdict.message_draft, "offer_type": otype, "offer_amount": {"currency_code": (dispute.get("dispute_amount") or {}).get("currency_code", "USD"), "value": f"{amt:.2f}"}}
+            req = {
+                "note": message or verdict.message_draft,
+                "offer_type": otype,
+                "offer_amount": {"currency_code": (dispute.get("dispute_amount") or {}).get("currency_code", "USD"), "value": f"{amt:.2f}"},
+            }
             resp = client.make_offer(dispute, req["note"], otype, req["offer_amount"])
         elif action == "escalate":
             req = {"note": message or "Escalating to PayPal for review."}
@@ -74,11 +88,24 @@ def execute(client: PayPalClient, verdict: Verdict, *, action: str | None = None
         else:
             raise ActionNotAllowed(f"unknown action {action}")
         after = client.get_dispute(verdict.dispute_id)
-        result = {"ok": True, "action": action, "request": req, "response": resp,
-                  "status_before": dispute.get("status"), "status_after": after.get("status"), "links_after": [l["rel"] for l in after.get("links", [])]}
+        result = {
+            "ok": True,
+            "action": action,
+            "request": req,
+            "response": resp,
+            "status_before": dispute.get("status"),
+            "status_after": after.get("status"),
+            "links_after": [lk["rel"] for lk in after.get("links", [])],
+        }
     except (ActionNotAllowed, PayPalError, ContractError) as e:
-        result = {"ok": False, "action": action, "request": req, "error": str(e),
-                  "issue": getattr(e, "issue", ""), "status_before": dispute.get("status")}
+        result = {
+            "ok": False,
+            "action": action,
+            "request": req,
+            "error": str(e),
+            "issue": getattr(e, "issue", ""),
+            "status_before": dispute.get("status"),
+        }
     audit({"dispute_id": verdict.dispute_id, "actor": actor, "verdict": verdict.verdict, **result})
     return result
 

@@ -1,8 +1,8 @@
 """Pull disputes + related capture/order from PayPal and build EvidenceBundles. Caches raw JSON in data/."""
+
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from .bundle import EvidenceBundle, bundle_from_paypal
 from .config import settings
@@ -45,7 +45,10 @@ def fetch_bundle(client: PayPalClient, dispute_id: str) -> tuple[EvidenceBundle,
                         if not t.get("carrier") and t.get("id"):
                             try:
                                 full = client.get_tracker(t["id"])
-                                t["carrier"], t["tracking_number"] = full.get("carrier", ""), full.get("tracking_number", t.get("tracking_number", ""))
+                                t["carrier"], t["tracking_number"] = (
+                                    full.get("carrier", ""),
+                                    full.get("tracking_number", t.get("tracking_number", "")),
+                                )
                                 t["status"] = full.get("status", t.get("status", ""))
                             except PayPalError:
                                 pass

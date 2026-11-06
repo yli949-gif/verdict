@@ -4,17 +4,17 @@ buyer-facing message. It never changes the verdict, the action, or the evidence 
 Guardrails: the model only receives the verdict + rule texts + the evidence bundle fields; the
 output is checked so that any tracking number / amount it mentions exists in the bundle.
 """
+
 from __future__ import annotations
 
 import json
+import os
 import re
-from typing import Optional
 
 from .bundle import EvidenceBundle
 from .config import settings
 from .engine import Verdict
 
-import os
 MODEL = os.environ.get("VERDICT_MODEL", "claude-sonnet-5-5")
 
 SYSTEM = """You are Verdict, an assistant for small PayPal sellers handling disputes.
@@ -29,7 +29,7 @@ Keep explanation under 120 words and buyer_note under 60 words.
 Return ONLY a JSON object, no code fences: {"explanation": str, "buyer_note": str, "explanation_zh": str}. explanation_zh is a faithful Simplified Chinese version of explanation."""
 
 
-def explain(bundle: EvidenceBundle, verdict: Verdict, language: str = "en") -> Optional[dict]:
+def explain(bundle: EvidenceBundle, verdict: Verdict, language: str = "en") -> dict | None:
     if not settings.llm_enabled:
         return None
     try:
@@ -38,9 +38,8 @@ def explain(bundle: EvidenceBundle, verdict: Verdict, language: str = "en") -> O
         return None
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     payload = {"verdict": verdict.to_dict(), "bundle": json.loads(bundle.model_dump_json(exclude={"now"}))}
-    msg = client.messages.create(model=MODEL, max_tokens=2000, system=SYSTEM,
-                                 messages=[{"role": "user", "content": json.dumps(payload)}])
-    text = "".join(block.text for block in msg.content if getattr(block, "type", "") == "text")
+    msg = client.messages.create(model=MODEL, max_tokens=2000, system=SYSTEM, messages=[{"role": "user", "content": json.dumps(payload)}])
+    text = "".join(getattr(block, "text", "") for block in msg.content if getattr(block, "type", "") == "text")
     m = re.search(r"\{.*\}", text, re.S)
     if not m:
         return None

@@ -1,0 +1,5 @@
+title = "verdict"
+[extend]
+useDefault = true
+[allowlist]
+paths = ['''docs/paypal-spec/.*''', '''eval/cases/.*''', '''tests/fixtures/.*''']

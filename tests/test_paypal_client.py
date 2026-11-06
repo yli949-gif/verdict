@@ -27,7 +27,11 @@ def test_require_link_blocks_before_network():
 
 
 def test_accept_claim_type_must_be_allowed():
-    d = {"dispute_id": "X", "links": [{"rel": "accept_claim"}], "allowed_response_options": {"accept_claim": {"accept_claim_types": ["REFUND"]}}}
+    d = {
+        "dispute_id": "X",
+        "links": [{"rel": "accept_claim"}],
+        "allowed_response_options": {"accept_claim": {"accept_claim_types": ["REFUND"]}},
+    }
     c = PayPalClient(client_id="x", client_secret="y")
     with pytest.raises(ActionNotAllowed):
         c.accept_claim(d, "note", accept_claim_type="PARTIAL_REFUND")

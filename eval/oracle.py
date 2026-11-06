@@ -5,6 +5,7 @@ What a label means: "the response PayPal's published Seller Protection / dispute
 should give, given only what PayPal has on file". It is NOT PayPal's adjudication outcome.
 Labels were reviewed by hand (see eval/README.md); edit this table, not the cases, to change them.
 """
+
 from __future__ import annotations
 
 from verdict.bundle import EvidenceBundle
@@ -37,7 +38,9 @@ def label(b: EvidenceBundle) -> tuple[str, str]:
                 return "RESPOND_WITH_EVIDENCE", "covered INR with tracking; PayPal reviewing, add supporting note"
             return "NO_ACTION_AVAILABLE", "proof on file, PayPal reviewing, no submit link"
         if has_tracking and not addr_ok:
-            return ("RESPOND_WITH_EVIDENCE" if b.seller_has_signature_proof and "provide_evidence" in links else "REFUND_NOW"), "shipped to a different address"
+            return (
+                "RESPOND_WITH_EVIDENCE" if b.seller_has_signature_proof and "provide_evidence" in links else "REFUND_NOW"
+            ), "shipped to a different address"
         if has_tracking and not eligible:
             if t.status.upper() == "DELIVERED" and ("provide_evidence" in links or "provide_supporting_info" in links):
                 return "RESPOND_WITH_EVIDENCE", "delivered proof, not protected: PayPal reviews on merits"
@@ -60,7 +63,13 @@ def label(b: EvidenceBundle) -> tuple[str, str]:
         return "REFUND_NOW", "SNAD without evidence"
 
     if b.reason == UNAUTH:
-        if eligible and "UNAUTHORIZED_TRANSACTION" in b.seller_protection_categories and has_tracking and addr_ok and "provide_evidence" in links:
+        if (
+            eligible
+            and "UNAUTHORIZED_TRANSACTION" in b.seller_protection_categories
+            and has_tracking
+            and addr_ok
+            and "provide_evidence" in links
+        ):
             return "RESPOND_WITH_EVIDENCE", "covered unauthorized claim with shipment proof"
         return "REFUND_NOW", "unauthorized without coverage/proof"
 

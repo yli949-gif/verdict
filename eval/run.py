@@ -12,6 +12,7 @@ Metrics (vs oracle label):
   over-refund rate (REFUND_NOW when oracle says contest/respond), under-refund rate (contest when oracle says refund),
   per-reason accuracy, latency.
 """
+
 from __future__ import annotations
 
 import json
@@ -22,7 +23,7 @@ from pathlib import Path
 
 from verdict.bundle import EvidenceBundle
 from verdict.config import settings
-from verdict.engine import ACTION_FOR, VERDICTS, decide
+from verdict.engine import decide, robustness
 
 CASES = Path(__file__).resolve().parent / "cases"
 OUT = Path(__file__).resolve().parent / "results.md"
@@ -69,10 +70,18 @@ Respond ONLY as JSON: {"verdict": ..., "action": ...}"""
 
 
 def sys_llm_only(b: EvidenceBundle):
-    import anthropic, os, re
+    import os
+    import re
+
+    import anthropic
+
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-    msg = client.messages.create(model=os.environ.get("VERDICT_MODEL", "claude-sonnet-5-5"), max_tokens=1500, system=LLM_PROMPT,
-                                 messages=[{"role": "user", "content": b.model_dump_json(exclude={"now"})}])
+    msg = client.messages.create(
+        model=os.environ.get("VERDICT_MODEL", "claude-sonnet-5-5"),
+        max_tokens=1500,
+        system=LLM_PROMPT,
+        messages=[{"role": "user", "content": b.model_dump_json(exclude={"now"})}],
+    )
     text = "".join(x.text for x in msg.content if getattr(x, "type", "") == "text")
     m = re.search(r"\{.*\}", text, re.S)
     try:
@@ -88,7 +97,12 @@ SYSTEMS = {"refund_all": sys_refund_all, "fight_all": sys_fight_all, "protection
 def evaluate(rows: list[dict], systems: dict) -> dict:
     res = {}
     for name, fn in systems.items():
-        n = len(rows); correct = unsafe = over = under = 0; per_reason = defaultdict(lambda: [0, 0]); t0 = time.time(); confusion = Counter(); errors = []
+        n = len(rows)
+        correct = unsafe = over = under = 0
+        per_reason = defaultdict(lambda: [0, 0])
+        t0 = time.time()
+        confusion = Counter()
+        errors = []
         for c in rows:
             b, gold = c["bundle_obj"], c["label"]
             pred, action = fn(b)
@@ -102,37 +116,84 @@ def evaluate(rows: list[dict], systems: dict) -> dict:
                 over += 1
             if pred in CONTEST and gold == "REFUND_NOW":
                 under += 1
-            per_reason[b.reason][0] += pred == gold; per_reason[b.reason][1] += 1
+            per_reason[b.reason][0] += pred == gold
+            per_reason[b.reason][1] += 1
             confusion[(gold, pred)] += 1
-        res[name] = {"n": n, "accuracy": correct / n, "unsafe_rate": unsafe / n, "over_refund": over / n, "under_refund": under / n,
-                     "per_reason": {k: v[0] / v[1] for k, v in per_reason.items()}, "ms_per_case": (time.time() - t0) * 1000 / n,
-                     "confusion": confusion, "errors": errors}
+        res[name] = {
+            "n": n,
+            "accuracy": correct / n,
+            "unsafe_rate": unsafe / n,
+            "over_refund": over / n,
+            "under_refund": under / n,
+            "per_reason": {k: v[0] / v[1] for k, v in per_reason.items()},
+            "ms_per_case": (time.time() - t0) * 1000 / n,
+            "confusion": confusion,
+            "errors": errors,
+        }
     return res
 
 
 def write_md(rows: list[dict], res: dict) -> str:
-    gold = Counter(c["label"] for c in rows); src = Counter(c["source"] for c in rows)
-    L = ["# Evaluation results", "", f"{len(rows)} cases ({src['sandbox']} captured from the PayPal sandbox, {src['synthetic']} synthetic bundles on the same schema). "
-         "Ground truth = `eval/oracle.py`, an independent decision table written from PayPal's published Seller Protection / dispute rules and hand-reviewed. "
-         "**A label is what policy says the seller should do, not what PayPal will decide.**", "",
-         "Label distribution: " + ", ".join(f"{k} {v}" for k, v in gold.most_common()), "",
-         "| system | accuracy | unsafe-action rate | over-refund | under-refund | INR acc | SNAD acc | UNAUTH acc | ms/case |", "|---|---|---|---|---|---|---|---|---|"]
+    gold = Counter(c["label"] for c in rows)
+    src = Counter(c["source"] for c in rows)
+    L = [
+        "# Evaluation results",
+        "",
+        f"{len(rows)} cases ({src['sandbox']} captured from the PayPal sandbox, {src['synthetic']} synthetic bundles on the same schema). "
+        "Ground truth = `eval/oracle.py`, an independent decision table written from PayPal's published Seller Protection / dispute rules and hand-reviewed. "
+        "**A label is what policy says the seller should do, not what PayPal will decide.**",
+        "",
+        "Label distribution: " + ", ".join(f"{k} {v}" for k, v in gold.most_common()),
+        "",
+        "| system | accuracy | unsafe-action rate | over-refund | under-refund | INR acc | SNAD acc | UNAUTH acc | ms/case |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
     for name, r in res.items():
         pr = r["per_reason"]
-        L.append(f"| {name} | **{r['accuracy']:.0%}** | {r['unsafe_rate']:.0%} | {r['over_refund']:.0%} | {r['under_refund']:.0%} | "
-                 f"{pr.get('MERCHANDISE_OR_SERVICE_NOT_RECEIVED', 0):.0%} | {pr.get('MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED', 0):.0%} | {pr.get('UNAUTHORISED', 0):.0%} | {r['ms_per_case']:.1f} |")
-    L += ["", "- unsafe-action rate: the system recommends calling a PayPal action that the dispute's HATEOAS links do not currently allow (PayPal would return ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE).",
-          "- over-refund: refunds when the policy says respond/offer/wait (money left on the table). under-refund: contests when the policy says refund (time and fees wasted).", ""]
+        L.append(
+            f"| {name} | **{r['accuracy']:.0%}** | {r['unsafe_rate']:.0%} | {r['over_refund']:.0%} | {r['under_refund']:.0%} | "
+            f"{pr.get('MERCHANDISE_OR_SERVICE_NOT_RECEIVED', 0):.0%} | {pr.get('MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED', 0):.0%} | {pr.get('UNAUTHORISED', 0):.0%} | {r['ms_per_case']:.1f} |"
+        )
+    L += [
+        "",
+        "- unsafe-action rate: the system recommends calling a PayPal action that the dispute's HATEOAS links do not currently allow (PayPal would return ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE).",
+        "- over-refund: refunds when the policy says respond/offer/wait (money left on the table). under-refund: contests when the policy says refund (time and fees wasted).",
+        "",
+    ]
     for name, r in res.items():
         if r["errors"]:
-            L += [f"## {name}: disagreements with the oracle ({len(r['errors'])})", "", "| case | oracle | system | oracle reason |", "|---|---|---|---|"]
+            L += [
+                f"## {name}: disagreements with the oracle ({len(r['errors'])})",
+                "",
+                "| case | oracle | system | oracle reason |",
+                "|---|---|---|---|",
+            ]
             L += [f"| {cid} | {g} | {p} | {why} |" for cid, g, p, why in r["errors"][:40]]
             L.append("")
-    L += ["## Limitations", "",
-          "- The oracle is our reading of PayPal's policy pages (docs/policy_sources.md); PayPal's internal adjudication uses more signals (buyer history, carrier scans, fraud models) that no API exposes.",
-          "- Synthetic cases vary 6 factors on a grid; real dispute mixes are skewed (INR ≈ 70%) and contain messier data (partial addresses, multiple trackers).",
-          "- The sandbox cannot produce adjudication outcomes on demand, so we do not report win rates and make no claim about them.",
-          "- `p_keep` values in the EV model are documented assumptions used to rank options, not calibrated probabilities."]
+    # robustness of the engine's verdicts to its own assumptions
+    robs = [robustness(c["bundle_obj"]) for c in rows]
+    n_rob = sum(1 for r in robs if r["robust"])
+    sens = [(c["id"], c["label"], r["agreement"]) for c, r in zip(rows, robs, strict=True) if not r["robust"]]
+    L += [
+        "## Robustness to assumptions",
+        "",
+        f"Each verdict is re-computed on a 20-point grid (p_keep × 0.5–1.25, handling cost $0–$25). "
+        f"**{n_rob}/{len(rows)} verdicts are unchanged on ≥90% of the grid.** The {len(sens)} assumption-sensitive cases are flagged in the UI:",
+        "",
+    ]
+    L += [f"- {cid}: {lab} (agreement {a:.0%})" for cid, lab, a in sens]
+    acc_by_scale = {}
+    for ps in (0.5, 0.75, 1.0, 1.25):
+        acc_by_scale[ps] = sum(1 for c in rows if decide(c["bundle_obj"], p_scale=ps).verdict == c["label"]) / len(rows)
+    L += ["", "Verdict accuracy vs oracle as p_keep is scaled: " + ", ".join(f"×{k}: {v:.0%}" for k, v in acc_by_scale.items()), ""]
+    L += [
+        "## Limitations",
+        "",
+        "- The oracle is our reading of PayPal's policy pages (docs/policy_sources.md); PayPal's internal adjudication uses more signals (buyer history, carrier scans, fraud models) that no API exposes.",
+        "- Synthetic cases vary 6 factors on a grid; real dispute mixes are skewed (INR ≈ 70%) and contain messier data (partial addresses, multiple trackers).",
+        "- The sandbox cannot produce adjudication outcomes on demand, so we do not report win rates and make no claim about them.",
+        "- `p_keep` values in the EV model are documented assumptions used to rank options, not calibrated probabilities.",
+    ]
     md = "\n".join(L)
     OUT.write_text(md)
     return md

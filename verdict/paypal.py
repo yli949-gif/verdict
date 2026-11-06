@@ -8,6 +8,7 @@ and expose toolkit-shaped tool definitions in `verdict.tools` for agent framewor
 Every call that changes state is gated by `require_link()`: PayPal's HATEOAS links and
 `allowed_response_options` on the dispute are the source of truth for what is allowed now.
 """
+
 from __future__ import annotations
 
 import base64
@@ -15,7 +16,7 @@ import json
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
@@ -51,7 +52,7 @@ class PayPalClient:
     client_secret: str = settings.paypal_client_secret
     base_url: str = settings.paypal_base_url
     timeout: float = 60.0
-    _token: Optional[str] = field(default=None, repr=False)
+    _token: str | None = field(default=None, repr=False)
     _token_exp: float = 0.0
 
     # ----- auth -----
@@ -59,24 +60,37 @@ class PayPalClient:
         if self._token and time.time() < self._token_exp - 60:
             return self._token
         auth = base64.b64encode(f"{self.client_id}:{self.client_secret}".encode()).decode()
-        r = httpx.post(f"{self.base_url}/v1/oauth2/token", data={"grant_type": "client_credentials"},
-                       headers={"Authorization": f"Basic {auth}"}, timeout=self.timeout)
+        r = httpx.post(
+            f"{self.base_url}/v1/oauth2/token",
+            data={"grant_type": "client_credentials"},
+            headers={"Authorization": f"Basic {auth}"},
+            timeout=self.timeout,
+        )
         if r.status_code != 200:
             raise PayPalError(r.status_code, _safe_json(r), "oauth")
         j = r.json()
         self._token, self._token_exp = j["access_token"], time.time() + int(j.get("expires_in", 3600))
         return self._token
 
-    def _headers(self, content_type: Optional[str] = "application/json") -> dict:
+    def _headers(self, content_type: str | None = "application/json") -> dict:
         h = {"Authorization": f"Bearer {self.token()}", "PayPal-Request-Id": str(uuid.uuid4())}
         if content_type:
             h["Content-Type"] = content_type
         return h
 
-    def _request(self, method: str, path: str, *, json_body: Any = None, content: bytes | None = None,
-                 content_type: str | None = "application/json", action: str = "") -> Any:
-        r = httpx.request(method, f"{self.base_url}{path}", headers=self._headers(content_type),
-                          json=json_body, content=content, timeout=self.timeout)
+    def _request(
+        self,
+        method: str,
+        path: str,
+        *,
+        json_body: Any = None,
+        content: bytes | None = None,
+        content_type: str | None = "application/json",
+        action: str = "",
+    ) -> Any:
+        r = httpx.request(
+            method, f"{self.base_url}{path}", headers=self._headers(content_type), json=json_body, content=content, timeout=self.timeout
+        )
         body = _safe_json(r)
         if r.status_code >= 400:
             raise PayPalError(r.status_code, body, action or f"{method} {path}")
@@ -112,24 +126,27 @@ class PayPalClient:
     # ----- gating -----
     @staticmethod
     def links(dispute: dict) -> set[str]:
-        return {l.get("rel", "") for l in dispute.get("links", [])}
+        return {lk.get("rel", "") for lk in dispute.get("links", [])}
 
     @staticmethod
     def require_link(dispute: dict, rel: str) -> None:
         if rel not in PayPalClient.links(dispute):
             raise ActionNotAllowed(
                 f"PayPal does not currently allow '{rel}' on {dispute.get('dispute_id')} "
-                f"(status={dispute.get('status')}, links={sorted(PayPalClient.links(dispute))})")
+                f"(status={dispute.get('status')}, links={sorted(PayPalClient.links(dispute))})"
+            )
 
     # ----- seller actions (all gated) -----
     def send_message(self, dispute: dict, message: str) -> dict:
         self.require_link(dispute, "send_message")
         validate_contract("send_message", {"message": message})
-        return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/send-message",
-                             json_body={"message": message}, action="send_message")
+        return self._request(
+            "POST", f"/v1/customer/disputes/{dispute['dispute_id']}/send-message", json_body={"message": message}, action="send_message"
+        )
 
-    def provide_evidence(self, dispute: dict, evidences: list[dict], return_shipping_address: dict | None = None,
-                         file: tuple[str, bytes, str] | None = None) -> dict:
+    def provide_evidence(
+        self, dispute: dict, evidences: list[dict], return_shipping_address: dict | None = None, file: tuple[str, bytes, str] | None = None
+    ) -> dict:
         """evidences: [{evidence_type, evidence_info?, notes?}], file: (filename, bytes, mime).
         Verified against sandbox 2026-11-06: multipart with an `input` JSON part (+ optional `evidence-file`)."""
         self.require_link(dispute, "provide_evidence")
@@ -138,18 +155,34 @@ class PayPalClient:
             payload["return_shipping_address"] = return_shipping_address
         validate_contract("provide_evidence", payload)
         body, ctype = encode_multipart(payload, file)
-        return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/provide-evidence",
-                             content=body, content_type=ctype, action="provide_evidence")
+        return self._request(
+            "POST",
+            f"/v1/customer/disputes/{dispute['dispute_id']}/provide-evidence",
+            content=body,
+            content_type=ctype,
+            action="provide_evidence",
+        )
 
     def provide_supporting_info(self, dispute: dict, notes: str, file: tuple[str, bytes, str] | None = None) -> dict:
         self.require_link(dispute, "provide_supporting_info")
         validate_contract("provide_supporting_info", {"notes": notes})
         body, ctype = encode_multipart({"notes": notes}, file)
-        return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/provide-supporting-info",
-                             content=body, content_type=ctype, action="provide_supporting_info")
+        return self._request(
+            "POST",
+            f"/v1/customer/disputes/{dispute['dispute_id']}/provide-supporting-info",
+            content=body,
+            content_type=ctype,
+            action="provide_supporting_info",
+        )
 
-    def accept_claim(self, dispute: dict, note: str, accept_claim_type: str = "REFUND",
-                     refund_amount: dict | None = None, return_shipping_address: dict | None = None) -> dict:
+    def accept_claim(
+        self,
+        dispute: dict,
+        note: str,
+        accept_claim_type: str = "REFUND",
+        refund_amount: dict | None = None,
+        return_shipping_address: dict | None = None,
+    ) -> dict:
         self.require_link(dispute, "accept_claim")
         allowed = ((dispute.get("allowed_response_options") or {}).get("accept_claim") or {}).get("accept_claim_types")
         if allowed and accept_claim_type not in allowed:
@@ -160,11 +193,13 @@ class PayPalClient:
         if return_shipping_address:
             payload["return_shipping_address"] = return_shipping_address
         validate_contract("accept_claim", payload)
-        return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/accept-claim",
-                             json_body=payload, action="accept_claim")
+        return self._request(
+            "POST", f"/v1/customer/disputes/{dispute['dispute_id']}/accept-claim", json_body=payload, action="accept_claim"
+        )
 
-    def make_offer(self, dispute: dict, note: str, offer_type: str, offer_amount: dict | None = None,
-                   return_shipping_address: dict | None = None) -> dict:
+    def make_offer(
+        self, dispute: dict, note: str, offer_type: str, offer_amount: dict | None = None, return_shipping_address: dict | None = None
+    ) -> dict:
         self.require_link(dispute, "make_offer")
         allowed = ((dispute.get("allowed_response_options") or {}).get("make_offer") or {}).get("offer_types")
         if allowed and offer_type not in allowed:
@@ -175,25 +210,29 @@ class PayPalClient:
         if return_shipping_address:
             payload["return_shipping_address"] = return_shipping_address
         validate_contract("make_offer", payload)
-        return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/make-offer",
-                             json_body=payload, action="make_offer")
+        return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/make-offer", json_body=payload, action="make_offer")
 
     def escalate(self, dispute: dict, note: str) -> dict:
         self.require_link(dispute, "escalate")
         validate_contract("escalate", {"note": note})
-        return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/escalate",
-                             json_body={"note": note}, action="escalate")
+        return self._request("POST", f"/v1/customer/disputes/{dispute['dispute_id']}/escalate", json_body={"note": note}, action="escalate")
 
 
 def encode_multipart(input_json: dict, file: tuple[str, bytes, str] | None = None) -> tuple[bytes, str]:
     """PayPal Disputes multipart: part `input` (application/json) + optional `evidence-file`."""
     boundary = "----verdict" + uuid.uuid4().hex
-    parts = [f'--{boundary}\r\nContent-Disposition: form-data; name="input"\r\n'
-             f'Content-Type: application/json\r\n\r\n{json.dumps(input_json)}\r\n'.encode()]
+    parts = [
+        f'--{boundary}\r\nContent-Disposition: form-data; name="input"\r\n'
+        f"Content-Type: application/json\r\n\r\n{json.dumps(input_json)}\r\n".encode()
+    ]
     if file:
         name, data, mime = file
-        parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="evidence-file"; filename="{name}"\r\n'
-                     f'Content-Type: {mime}\r\n\r\n'.encode() + data + b"\r\n")
+        parts.append(
+            f'--{boundary}\r\nContent-Disposition: form-data; name="evidence-file"; filename="{name}"\r\n'
+            f"Content-Type: {mime}\r\n\r\n".encode()
+            + data
+            + b"\r\n"
+        )
     parts.append(f"--{boundary}--\r\n".encode())
     return b"".join(parts), f"multipart/form-data; boundary={boundary}"
 
