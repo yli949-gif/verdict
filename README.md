@@ -10,7 +10,7 @@ Built for the PayPal AI Hackathon (Nov 2026). Runs against the PayPal **sandbox*
 
 1. **Reads** the dispute, the capture (`seller_protection.status`), the order (ship-to address, trackers) and the carrier record. Nothing is typed in by hand.
 2. **Decides** with a deterministic, policy-cited rule engine: `REFUND_NOW · RESPOND_WITH_EVIDENCE · OFFER_PARTIAL · REPLY_AND_WAIT · NO_ACTION_AVAILABLE`, with the rule ids that fired, the policy text behind each, an expected-value comparison, and a confidence level.
-3. **Gates** every action on PayPal's own `links[]` / `allowed_response_options` — the only authoritative list of what is allowed at that moment. The engine never recommends an action PayPal would refuse (measured: 0% unsafe actions on 94 cases).
+3. **Gates** every action on PayPal's own `links[]` / `allowed_response_options` — the only authoritative list of what is allowed at that moment. The engine never recommends an action PayPal would refuse (measured: 0% unsafe actions on 95 cases).
 4. **Executes** only after a human confirms: `provide-evidence` (multipart with tracking + a generated evidence summary file), `accept-claim`, `make-offer`, `send-message`, `escalate`, `provide-supporting-info`. Every call is written to an audit log with the status transition it caused.
 5. **Explains** in English or 中文 with Claude (optional) — the model can rewrite the explanation and the buyer note but never the verdict, and its output is checked against the evidence bundle for invented tracking numbers or contradictions.
 
@@ -18,18 +18,19 @@ A verdict is a **recommendation under PayPal's published policies**. PayPal make
 
 ## Results
 
-From `python -m eval.run` (94 cases: 2 captured from the sandbox, 77 synthetic bundles on the same schema, 15 messy/adversarial cases incl. prompt-injection in buyer messages). Ground truth is an independent decision table (`eval/oracle.py`) written from PayPal's policy pages and hand-reviewed — *what policy says the seller should do*, not what PayPal will decide.
+From `python -m eval.run` (95 cases: 3 captured from the sandbox, 77 synthetic bundles on the same schema, 15 messy/adversarial cases incl. prompt-injection in buyer messages). Ground truth is an independent decision table (`eval/oracle.py`) written from PayPal's policy pages and hand-reviewed — *what policy says the seller should do*, not what PayPal will decide.
 
 | system | accuracy | unsafe-action rate | over-refund | under-refund |
 |---|---|---|---|---|
-| refund everything | 56% | 0% | 32% | 0% |
-| fight everything PayPal lets you fight | 46% | 0% | 1% | 33% |
-| trust `seller_protection` alone | 34% | **36%** | 9% | 27% |
+| refund everything | 56% | 0% | 31% | 0% |
+| fight everything PayPal lets you fight | 45% | 0% | 0% | 33% |
+| trust `seller_protection` alone | 33% | **37%** | 8% | 26% |
+| Claude alone, zero-shot on the same bundle (`claude-sonnet-5-5`) | 62% | 4% | 1% | 21% |
 | **Verdict (rules)** | **99%** | **0%** | 1% | 0% |
 
 - *unsafe action*: recommending a PayPal call the dispute's links don't allow (PayPal returns `ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE`).
 - *over-refund*: refunding when policy says respond/offer/wait. *under-refund*: contesting when policy says refund.
-- The single Verdict miss is a $0 degenerate case. Full table, per-reason breakdown and every disagreement: [`eval/results.md`](eval/results.md).
+- The single Verdict miss is a $0 degenerate case. The LLM-only baseline is competent on clean cases but contests 21% of cases policy says to refund (the expensive failure), and on the two prompt-injection cases it was swayed once (waited instead of refunding) — the rules were not. Full table, per-reason breakdown and every disagreement: [`eval/results.md`](eval/results.md).
 - Live sandbox replay (2026-11-06): `send-message`, `provide-evidence` (multipart + file), `provide-supporting-info`, `escalate` all returned 200 and moved the dispute as the engine expected; see `docs/policy_sources.md` for the observed state machine.
 
 ## How it decides (short version)

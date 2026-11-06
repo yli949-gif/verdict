@@ -2,7 +2,7 @@
  "id": "case-018",
  "source": "synthetic",
  "label": "RESPOND_WITH_EVIDENCE",
- "label_reason": "covered INR with tracking to PayPal address",
+ "label_reason": "covered INR with tracking; PayPal reviewing, add supporting note",
  "reviewed_by": "",
  "notes": "",
  "bundle": {

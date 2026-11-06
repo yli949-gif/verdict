@@ -71,7 +71,7 @@ Respond ONLY as JSON: {"verdict": ..., "action": ...}"""
 def sys_llm_only(b: EvidenceBundle):
     import anthropic, os, re
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-    msg = client.messages.create(model=os.environ.get("VERDICT_MODEL", "claude-sonnet-5-5"), max_tokens=120, system=LLM_PROMPT,
+    msg = client.messages.create(model=os.environ.get("VERDICT_MODEL", "claude-sonnet-5-5"), max_tokens=1500, system=LLM_PROMPT,
                                  messages=[{"role": "user", "content": b.model_dump_json(exclude={"now"})}])
     text = "".join(x.text for x in msg.content if getattr(x, "type", "") == "text")
     m = re.search(r"\{.*\}", text, re.S)

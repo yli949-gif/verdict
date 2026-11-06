@@ -31,8 +31,10 @@ def label(b: EvidenceBundle) -> tuple[str, str]:
         if not b.is_physical:
             return "REFUND_NOW", "intangible item: no shipping proof possible"
         if has_tracking and addr_ok and eligible and "ITEM_NOT_RECEIVED" in b.seller_protection_categories:
-            if "provide_evidence" in links or "provide_supporting_info" in links:
+            if "provide_evidence" in links:
                 return "RESPOND_WITH_EVIDENCE", "covered INR with tracking to PayPal address"
+            if "provide_supporting_info" in links and not b.supporting_info_submitted:
+                return "RESPOND_WITH_EVIDENCE", "covered INR with tracking; PayPal reviewing, add supporting note"
             return "NO_ACTION_AVAILABLE", "proof on file, PayPal reviewing, no submit link"
         if has_tracking and not addr_ok:
             return ("RESPOND_WITH_EVIDENCE" if b.seller_has_signature_proof and "provide_evidence" in links else "REFUND_NOW"), "shipped to a different address"
