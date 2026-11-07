@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -17,6 +18,7 @@ from .narrative import explain
 from .paypal import PayPalClient, PayPalError
 from .replay import ReplayClient
 from .sync import fetch_bundle, list_dispute_ids, save_seller_fact
+from .webhooks import EVENTS, read_events, record, verify_signature
 
 app = FastAPI(title="Verdict", version="0.1.0")
 STATIC = Path(__file__).resolve().parent.parent / "static"
@@ -136,3 +138,53 @@ def do_execute(dispute_id: str, req: ExecuteReq):
 @app.get("/api/audit")
 def audit(dispute_id: str | None = None):
     return read_audit(dispute_id)
+
+
+@app.post("/webhooks/paypal")
+async def paypal_webhook(request: Request):
+    """CUSTOMER.DISPUTE.* → verify with PayPal, re-evaluate the dispute, record the event."""
+    body = await request.body()
+    verified = verify_signature(client(), dict(request.headers), body)
+    if not verified:
+        raise HTTPException(401, "webhook signature not verified")
+    event = json.loads(body)
+    if event.get("event_type") not in EVENTS:
+        return {"ignored": event.get("event_type")}
+    dispute_id = (event.get("resource") or {}).get("dispute_id")
+    _cache.pop(dispute_id, None)
+    verdict = None
+    if dispute_id:
+        try:
+            verdict = _analyze(dispute_id, False)["verdict"]
+        except HTTPException:
+            verdict = None
+    return record(event, verdict, verified)
+
+
+@app.get("/api/inbox")
+def inbox():
+    """Actionable disputes sorted by time left, with the verdict each one needs. The daily triage view."""
+    rows = []
+    for d in list_dispute_ids(client()):
+        if d.get("_state_bucket") != "REQUIRED_ACTION":
+            continue
+        a = _analyze(d["dispute_id"], False)
+        v = a["verdict"]
+        rows.append(
+            {
+                "dispute_id": d["dispute_id"],
+                "amount": d.get("dispute_amount"),
+                "reason": d.get("reason"),
+                "deadline_hours": v["deadline_hours"],
+                "verdict": v["verdict"],
+                "action": v["action"],
+                "urgent": v["deadline_hours"] is not None and v["deadline_hours"] < 48,
+            }
+        )
+    rows.sort(key=lambda r: (r["deadline_hours"] is None, r["deadline_hours"] or 0))
+    return rows
+
+
+@app.get("/api/events")
+def events():
+    return read_events()

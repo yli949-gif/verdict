@@ -12,8 +12,9 @@ Built for the PayPal AI Hackathon (Nov 2026). Runs against the PayPal **sandbox*
 2. **Decides** with a deterministic, policy-cited rule engine: `REFUND_NOW · RESPOND_WITH_EVIDENCE · OFFER_PARTIAL · REPLY_AND_WAIT · NO_ACTION_AVAILABLE`, with the rule ids that fired, the policy text behind each, an expected-value comparison, and a confidence level.
 3. **Gates** every action on PayPal's own `links[]` / `allowed_response_options` — the only authoritative list of what is allowed at that moment — and validates every outbound body against PayPal's OpenAPI spec before it leaves the process. The engine never recommends an action PayPal would refuse (0% unsafe actions on 95 cases; confirmed by PayPal on 11/11 live probes).
 4. **Executes** only after a human confirms: `provide-evidence` (multipart with tracking + a generated evidence summary file), `accept-claim`, `make-offer`, `send-message`, `escalate`, `provide-supporting-info`. Every call is written to an audit log with the status transition it caused.
-5. **Shows what would change the verdict** (add tracking → respond, EV +$x) and how stable the verdict is under its own assumptions.
-6. **Explains** in English or 中文 with Claude (optional) — the model can rewrite the explanation and the buyer note but never the verdict, and its output is checked against the evidence bundle for invented tracking numbers or contradictions.
+5. **Reacts to PayPal webhooks** (`CUSTOMER.DISPUTE.*`, signature verified through PayPal's verify endpoint) and keeps a deadline-sorted inbox (`/api/inbox`) so the case that expires first is on top.
+6. **Shows what would change the verdict** (add tracking → respond, EV +$x) and how stable the verdict is under its own assumptions.
+7. **Explains** in English or 中文 with Claude (optional) — the model can rewrite the explanation and the buyer note but never the verdict, and its output is checked against the evidence bundle for invented tracking numbers or contradictions.
 
 A verdict is a **recommendation under PayPal's published policies**. PayPal makes the decision; Verdict never claims to predict it.
 
@@ -95,6 +96,8 @@ verdict/actions.py    executor + audit log
 verdict/narrative.py  optional Claude explanation with faithfulness check
 verdict/app.py        FastAPI API + static/index.html UI
 verdict/tools.py      agent-framework tool definitions
+verdict/replay.py     credential-less replay of captured sandbox cases (state machine simulated)
+verdict/webhooks.py   CUSTOMER.DISPUTE.* webhook verification + event log
 verdict/contract.py   outbound payload validation against PayPal's OpenAPI spec (docs/paypal-spec/)
 verdict/statemachine.py observed dispute states/transitions (test generator + documentation)
 eval/                 oracle.py, generate_cases.py, run.py, live_gate_check.py, second_rater.py, cases/, *.md reports

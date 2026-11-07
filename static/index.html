@@ -94,6 +94,7 @@ async function boot(){
   const h=await fetch("/api/health").then(r=>r.json());
   $("#env").innerHTML=`PayPal <b>${h.environment}</b> · Claude explanations <b>${h.llm?"on":"off"}</b>${h.environment==="replay"?`<br><span class="note">Replay of real sandbox cases (${h.replay_snapshot}); actions are simulated with the observed state machine.</span>`:""}`;
   const list=await fetch("/api/disputes").then(r=>r.json());
+  fetch("/api/inbox").then(r=>r.json()).then(inbox=>{inbox.forEach(i=>{const el=document.querySelector(`.case[data-id="${i.dispute_id}"] .pill`); if(el&&i.deadline_hours!=null){el.textContent=`${i.urgent?"⚠ ":""}${Math.floor(i.deadline_hours/24)}d ${Math.floor(i.deadline_hours%24)}h to respond`; if(i.urgent) el.style.cssText="border-color:var(--danger);color:var(--danger)";}})}).catch(()=>{});
   $("#cases").innerHTML=list.length?list.map(d=>`<button class="case" data-id="${d.dispute_id}"><div class="id">${d.dispute_id}</div>
     <div class="meta"><span>${(d.reason||"").replace("MERCHANDISE_OR_SERVICE_","").replaceAll("_"," ").toLowerCase()}</span><span>${d.amount?money(d.amount.value,d.amount.currency_code):""}</span></div>
     <div class="meta"><span class="pill ${d.bucket==="REQUIRED_ACTION"?"act":""}">${d.bucket==="REQUIRED_ACTION"?"needs your response":(d.status||"").replaceAll("_"," ").toLowerCase()}</span></div></button>`).join("")
