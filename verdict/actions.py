@@ -70,7 +70,10 @@ def execute(
         elif action == "accept_claim":
             allowed = ((dispute.get("allowed_response_options") or {}).get("accept_claim") or {}).get("accept_claim_types") or ["REFUND"]
             ctype = accept_claim_type or ("REFUND" if "REFUND" in allowed else allowed[0])
-            req = {"note": message or verdict.message_draft, "accept_claim_type": ctype}
+            req = {
+                "note": message or verdict.message_draft or "We are refunding this order in full. Sorry for the trouble.",
+                "accept_claim_type": ctype,
+            }
             resp = client.accept_claim(dispute, req["note"], ctype)
         elif action == "make_offer":
             allowed = ((dispute.get("allowed_response_options") or {}).get("make_offer") or {}).get("offer_types") or ["REFUND"]
@@ -106,7 +109,15 @@ def execute(
             "issue": getattr(e, "issue", ""),
             "status_before": dispute.get("status"),
         }
-    audit({"dispute_id": verdict.dispute_id, "actor": actor, "verdict": verdict.verdict, **result})
+    audit(
+        {
+            "dispute_id": verdict.dispute_id,
+            "actor": actor,
+            "verdict": verdict.verdict,
+            "replay": bool(getattr(client, "is_replay", False)),
+            **result,
+        }
+    )
     return result
 
 

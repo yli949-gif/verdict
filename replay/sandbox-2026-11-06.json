@@ -1,0 +1,1303 @@
+{
+ "disputes": {
+  "PP-R-GHY-10196892": {
+   "dispute_id": "PP-R-GHY-10196892",
+   "create_time": "2026-11-06T20:41:03.336Z",
+   "update_time": "2026-11-07T03:10:44.144Z",
+   "disputed_transactions": [
+    {
+     "buyer_transaction_id": "5EA79313JU237201U",
+     "seller_transaction_id": "55U43170E2019660P",
+     "create_time": "2026-11-06T09:07:42.000Z",
+     "transaction_status": "HELD",
+     "gross_amount": {
+      "currency_code": "USD",
+      "value": "62.00"
+     },
+     "buyer": {
+      "email": "buyer@example.com",
+      "payer_id": "L2SQCQMXQJR42",
+      "name": "John Doe"
+     },
+     "seller": {
+      "email": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC",
+      "name": "Test Store"
+     },
+     "items": [
+      {
+       "item_id": "TOTE-02",
+       "item_name": "Linen tote bag",
+       "item_quantity": "1",
+       "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+       "item_type": "PRODUCT"
+      }
+     ],
+     "seller_protection_eligible": true,
+     "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+    }
+   ],
+   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+   "status": "WAITING_FOR_SELLER_RESPONSE",
+   "dispute_amount": {
+    "currency_code": "USD",
+    "value": "62.00"
+   },
+   "dispute_state": "REQUIRED_ACTION",
+   "fund_movements": [
+    {
+     "party": "RECEIVER",
+     "amount": {
+      "currency_code": "USD",
+      "value": "59.35"
+     },
+     "initiated_time": "2026-11-06T20:44:04.000Z",
+     "type": "DEBIT",
+     "reason": "HOLD_PLACED"
+    }
+   ],
+   "dispute_life_cycle_stage": "CHARGEBACK",
+   "dispute_channel": "INTERNAL",
+   "extensions": {
+    "merchant_contacted": false,
+    "buyer_contacted_time": "2026-11-06T20:41:02.375Z"
+   },
+   "evidences": [
+    {
+     "evidence_type": "CREATE",
+     "notes": "Sandbox test: the tote bag never arrived and tracking shows no delivery scan.",
+     "source": "SUBMITTED_BY_BUYER",
+     "date": "2026-11-06T20:41:03.336Z",
+     "dispute_life_cycle_stage": "INQUIRY"
+    },
+    {
+     "evidence_type": "PROOF_OF_FULFILLMENT",
+     "source": "REQUESTED_FROM_SELLER",
+     "date": "2026-11-07T03:10:19.653Z",
+     "dispute_life_cycle_stage": "CHARGEBACK"
+    },
+    {
+     "evidence_type": "PROOF_OF_REFUND",
+     "source": "REQUESTED_FROM_SELLER",
+     "date": "2026-11-07T03:10:19.653Z",
+     "dispute_life_cycle_stage": "CHARGEBACK"
+    },
+    {
+     "evidence_type": "PROOF_OF_DELIVERY_SIGNATURE",
+     "source": "REQUESTED_FROM_SELLER",
+     "date": "2026-11-07T03:10:19.653Z",
+     "dispute_life_cycle_stage": "CHARGEBACK"
+    }
+   ],
+   "seller_response_due_date": "2026-11-10T04:59:59.000Z",
+   "offer": {
+    "buyer_requested_amount": {
+     "currency_code": "USD",
+     "value": "62.00"
+    }
+   },
+   "refund_details": {
+    "allowed_refund_amount": {
+     "currency_code": "USD",
+     "value": "62.00"
+    }
+   },
+   "supporting_info": [
+    {
+     "notes": "Seller: shipped via USPS 9400100000000000000002 on Nov 6 to confirmed address.",
+     "source": "SUBMITTED_BY_SELLER",
+     "provided_time": "2026-11-06T20:45:19.336Z"
+    },
+    {
+     "notes": "Order shipped Nov 6 via USPS 9400100000000000000002 to the PayPal-confirmed address 2211 N First St, San Jose CA 95131 (status: shipped).",
+     "source": "SUBMITTED_BY_SELLER",
+     "provided_time": "2026-11-06T21:25:28.182Z"
+    }
+   ],
+   "allowed_response_options": {
+    "accept_claim": {
+     "accept_claim_types": [
+      "REFUND"
+     ]
+    }
+   },
+   "links": [
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-GHY-10196892",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-GHY-10196892/accept-claim",
+     "rel": "accept_claim",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-GHY-10196892/provide-evidence",
+     "rel": "provide_evidence",
+     "method": "POST"
+    }
+   ]
+  },
+  "PP-R-WMD-10196904": {
+   "dispute_id": "PP-R-WMD-10196904",
+   "create_time": "2026-11-06T22:08:03.047Z",
+   "update_time": "2026-11-06T22:17:23.960Z",
+   "disputed_transactions": [
+    {
+     "buyer_transaction_id": "2GV05258NK1094640",
+     "seller_transaction_id": "4F163447MV347821K",
+     "create_time": "2026-11-06T22:01:31.000Z",
+     "transaction_status": "HELD",
+     "gross_amount": {
+      "currency_code": "USD",
+      "value": "89.00"
+     },
+     "buyer": {
+      "email": "buyer@example.com",
+      "payer_id": "L2SQCQMXQJR42",
+      "name": "John Doe"
+     },
+     "seller": {
+      "email": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC",
+      "name": "Test Store"
+     },
+     "items": [
+      {
+       "item_id": "POUR-11",
+       "item_name": "Ceramic pour-over set",
+       "item_quantity": "1",
+       "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+       "item_type": "PRODUCT"
+      }
+     ],
+     "seller_protection_eligible": true,
+     "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+    }
+   ],
+   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+   "status": "WAITING_FOR_BUYER_RESPONSE",
+   "dispute_amount": {
+    "currency_code": "USD",
+    "value": "89.00"
+   },
+   "dispute_state": "REQUIRED_OTHER_PARTY_ACTION",
+   "fund_movements": [
+    {
+     "party": "RECEIVER",
+     "amount": {
+      "currency_code": "USD",
+      "value": "85.40"
+     },
+     "initiated_time": "2026-11-06T22:11:04.000Z",
+     "type": "DEBIT",
+     "reason": "HOLD_PLACED"
+    }
+   ],
+   "dispute_life_cycle_stage": "INQUIRY",
+   "dispute_channel": "INTERNAL",
+   "messages": [
+    {
+     "posted_by": "BUYER",
+     "time_posted": "2026-11-06T22:08:03.047Z",
+     "content": "It's been over a week and the pour-over set hasn't arrived. No delivery notice either."
+    }
+   ],
+   "extensions": {
+    "merchant_contacted": false,
+    "buyer_contacted_time": "2026-11-06T22:08:02.303Z"
+   },
+   "evidences": [
+    {
+     "evidence_type": "CREATE",
+     "notes": "It's been over a week and the pour-over set hasn't arrived. No delivery notice either.",
+     "source": "SUBMITTED_BY_BUYER",
+     "date": "2026-11-06T22:08:03.047Z",
+     "dispute_life_cycle_stage": "INQUIRY"
+    },
+    {
+     "evidence_type": "PROOF_OF_FULFILLMENT",
+     "evidence_info": {
+      "tracking_info": [
+       {
+        "carrier_name": "USPS",
+        "tracking_number": "9400100000000000000089"
+       }
+      ]
+     },
+     "documents": [
+      {
+       "name": "verdict_evidence_summary.txt",
+       "url": "https://api-m.sandbox.paypal.com/v2/content/documents/DIS-010-11f1-da2f-ce85cf70-a056-5075653147ab/files/1/download"
+      }
+     ],
+     "notes": "Order shipped via USPS tracking 9400100000000000000089 (status: SHIPPED) to 2211 N First St, San Jose CA 95131, which matches the PayPal transaction address.",
+     "source": "SUBMITTED_BY_SELLER",
+     "date": "2026-11-06T22:17:09.164Z",
+     "action_info": {
+      "action": "PROVIDE_EVIDENCE"
+     },
+     "dispute_life_cycle_stage": "INQUIRY"
+    }
+   ],
+   "buyer_response_due_date": "2026-11-26T22:08:03.047Z",
+   "offer": {
+    "buyer_requested_amount": {
+     "currency_code": "USD",
+     "value": "89.00"
+    }
+   },
+   "refund_details": {
+    "allowed_refund_amount": {
+     "currency_code": "USD",
+     "value": "89.00"
+    }
+   },
+   "allowed_response_options": {
+    "accept_claim": {
+     "accept_claim_types": [
+      "REFUND"
+     ]
+    }
+   },
+   "links": [
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-WMD-10196904",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-WMD-10196904/accept-claim",
+     "rel": "accept_claim",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-WMD-10196904/send-message",
+     "rel": "send_message",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-WMD-10196904/escalate",
+     "rel": "escalate",
+     "method": "POST"
+    }
+   ]
+  },
+  "PP-R-XSW-10196894": {
+   "dispute_id": "PP-R-XSW-10196894",
+   "create_time": "2026-11-06T20:49:05.159Z",
+   "update_time": "2026-11-06T20:58:03.890Z",
+   "disputed_transactions": [
+    {
+     "buyer_transaction_id": "2UC18444710466715",
+     "seller_transaction_id": "0E853853CV656352M",
+     "create_time": "2026-11-06T20:46:32.000Z",
+     "transaction_status": "HELD",
+     "gross_amount": {
+      "currency_code": "USD",
+      "value": "35.00"
+     },
+     "buyer": {
+      "email": "buyer@example.com",
+      "payer_id": "L2SQCQMXQJR42",
+      "name": "John Doe"
+     },
+     "seller": {
+      "email": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC",
+      "name": "Test Store"
+     },
+     "items": [
+      {
+       "item_id": "HAT-03",
+       "item_name": "Wool beanie",
+       "item_quantity": "1",
+       "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+       "item_type": "PRODUCT"
+      }
+     ],
+     "seller_protection_eligible": true,
+     "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+    }
+   ],
+   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+   "status": "WAITING_FOR_SELLER_RESPONSE",
+   "dispute_amount": {
+    "currency_code": "USD",
+    "value": "35.00"
+   },
+   "dispute_state": "REQUIRED_ACTION",
+   "fund_movements": [
+    {
+     "party": "RECEIVER",
+     "amount": {
+      "currency_code": "USD",
+      "value": "33.29"
+     },
+     "initiated_time": "2026-11-06T20:52:34.000Z",
+     "type": "DEBIT",
+     "reason": "HOLD_PLACED"
+    }
+   ],
+   "dispute_life_cycle_stage": "CHARGEBACK",
+   "dispute_channel": "INTERNAL",
+   "messages": [
+    {
+     "posted_by": "BUYER",
+     "time_posted": "2026-11-06T20:49:05.159Z",
+     "content": "Sandbox test #2: beanie never arrived, no tracking provided by seller."
+    },
+    {
+     "posted_by": "SELLER",
+     "time_posted": "2026-11-06T20:53:55.423Z",
+     "content": "Hi John, sorry about this. Your beanie shipped Nov 6 via USPS 9400100000000000000003; we'll refund if it isn't delivered by Nov 12."
+    }
+   ],
+   "extensions": {
+    "merchant_contacted": false,
+    "buyer_contacted_time": "2026-11-06T20:49:04.494Z"
+   },
+   "evidences": [
+    {
+     "evidence_type": "CREATE",
+     "notes": "Sandbox test #2: beanie never arrived, no tracking provided by seller.",
+     "source": "SUBMITTED_BY_BUYER",
+     "date": "2026-11-06T20:49:05.159Z",
+     "dispute_life_cycle_stage": "INQUIRY"
+    },
+    {
+     "evidence_type": "PROOF_OF_FULFILLMENT",
+     "evidence_info": {
+      "tracking_info": [
+       {
+        "carrier_name": "USPS",
+        "tracking_number": "9400100000000000000003"
+       }
+      ]
+     },
+     "documents": [
+      {
+       "name": "proof.txt",
+       "url": "https://api-m.sandbox.paypal.com/v2/content/documents/DIS-010-11f1-da24-4675d040-856b-d92c3aebefec/files/1/download"
+      }
+     ],
+     "notes": "Shipped Nov 6 via USPS to the PayPal-confirmed address 2211 N First St, San Jose CA 95131.",
+     "source": "SUBMITTED_BY_SELLER",
+     "date": "2026-11-06T20:54:36.431Z",
+     "action_info": {
+      "action": "PROVIDE_EVIDENCE"
+     },
+     "dispute_life_cycle_stage": "INQUIRY"
+    },
+    {
+     "evidence_type": "OTHER",
+     "notes": "Escalating to PayPal for review (sandbox test).",
+     "source": "SUBMITTED_BY_SELLER",
+     "date": "2026-11-06T20:55:09.036Z",
+     "action_info": {
+      "action": "ESCALATE"
+     },
+     "dispute_life_cycle_stage": "INQUIRY"
+    },
+    {
+     "evidence_type": "PROOF_OF_FULFILLMENT",
+     "source": "REQUESTED_FROM_SELLER",
+     "date": "2026-11-06T20:58:03.890Z"
+    },
+    {
+     "evidence_type": "PROOF_OF_REFUND",
+     "source": "REQUESTED_FROM_SELLER",
+     "date": "2026-11-06T20:58:03.890Z"
+    },
+    {
+     "evidence_type": "OTHER",
+     "source": "REQUESTED_FROM_SELLER",
+     "date": "2026-11-06T20:58:03.890Z"
+    }
+   ],
+   "seller_response_due_date": "2026-11-17T04:59:59.000Z",
+   "offer": {
+    "buyer_requested_amount": {
+     "currency_code": "USD",
+     "value": "35.00"
+    }
+   },
+   "refund_details": {
+    "allowed_refund_amount": {
+     "currency_code": "USD",
+     "value": "35.00"
+    }
+   },
+   "allowed_response_options": {
+    "accept_claim": {
+     "accept_claim_types": [
+      "REFUND",
+      "PARTIAL_REFUND"
+     ]
+    }
+   },
+   "links": [
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-XSW-10196894",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-XSW-10196894/accept-claim",
+     "rel": "accept_claim",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-XSW-10196894/provide-evidence",
+     "rel": "provide_evidence",
+     "method": "POST"
+    }
+   ]
+  }
+ },
+ "captures": {
+  "55U43170E2019660P": {
+   "id": "55U43170E2019660P",
+   "amount": {
+    "currency_code": "USD",
+    "value": "62.00"
+   },
+   "final_capture": true,
+   "seller_protection": {
+    "status": "ELIGIBLE",
+    "dispute_categories": [
+     "ITEM_NOT_RECEIVED",
+     "UNAUTHORIZED_TRANSACTION"
+    ]
+   },
+   "status": "PENDING",
+   "status_details": {
+    "reason": "BUYER_COMPLAINT"
+   },
+   "supplementary_data": {
+    "related_ids": {
+     "order_id": "2B456142VA476284X"
+    }
+   },
+   "payee": {
+    "email_address": "seller@example.com",
+    "merchant_id": "6VGPMS3QHUXRC"
+   },
+   "create_time": "2026-11-06T09:07:42Z",
+   "update_time": "2026-11-06T20:44:03Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/55U43170E2019660P",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/55U43170E2019660P/refund",
+     "rel": "refund",
+     "method": "POST"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2B456142VA476284X",
+     "rel": "up",
+     "method": "GET"
+    }
+   ]
+  },
+  "4F163447MV347821K": {
+   "id": "4F163447MV347821K",
+   "amount": {
+    "currency_code": "USD",
+    "value": "89.00"
+   },
+   "final_capture": true,
+   "seller_protection": {
+    "status": "ELIGIBLE",
+    "dispute_categories": [
+     "ITEM_NOT_RECEIVED",
+     "UNAUTHORIZED_TRANSACTION"
+    ]
+   },
+   "status": "PENDING",
+   "status_details": {
+    "reason": "BUYER_COMPLAINT"
+   },
+   "supplementary_data": {
+    "related_ids": {
+     "order_id": "4KA946696W852404F"
+    }
+   },
+   "payee": {
+    "email_address": "seller@example.com",
+    "merchant_id": "6VGPMS3QHUXRC"
+   },
+   "create_time": "2026-11-06T22:01:31Z",
+   "update_time": "2026-11-06T22:12:47Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/4F163447MV347821K",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/4F163447MV347821K/refund",
+     "rel": "refund",
+     "method": "POST"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/4KA946696W852404F",
+     "rel": "up",
+     "method": "GET"
+    }
+   ]
+  },
+  "0E853853CV656352M": {
+   "id": "0E853853CV656352M",
+   "amount": {
+    "currency_code": "USD",
+    "value": "35.00"
+   },
+   "final_capture": true,
+   "seller_protection": {
+    "status": "ELIGIBLE",
+    "dispute_categories": [
+     "ITEM_NOT_RECEIVED",
+     "UNAUTHORIZED_TRANSACTION"
+    ]
+   },
+   "status": "PENDING",
+   "status_details": {
+    "reason": "BUYER_COMPLAINT"
+   },
+   "supplementary_data": {
+    "related_ids": {
+     "order_id": "0CP32478A18668504"
+    }
+   },
+   "payee": {
+    "email_address": "seller@example.com",
+    "merchant_id": "6VGPMS3QHUXRC"
+   },
+   "create_time": "2026-11-06T20:46:32Z",
+   "update_time": "2026-11-06T20:55:17Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/0E853853CV656352M",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/0E853853CV656352M/refund",
+     "rel": "refund",
+     "method": "POST"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/0CP32478A18668504",
+     "rel": "up",
+     "method": "GET"
+    }
+   ]
+  }
+ },
+ "orders": {
+  "2B456142VA476284X": {
+   "id": "2B456142VA476284X",
+   "intent": "CAPTURE",
+   "status": "COMPLETED",
+   "payment_source": {
+    "paypal": {
+     "email_address": "buyer@example.com",
+     "account_id": "L2SQCQMXQJR42",
+     "account_status": "VERIFIED",
+     "name": {
+      "given_name": "John",
+      "surname": "Doe"
+     },
+     "address": {
+      "country_code": "US"
+     }
+    }
+   },
+   "purchase_units": [
+    {
+     "reference_id": "poc-wallet-1",
+     "amount": {
+      "currency_code": "USD",
+      "value": "62.00",
+      "breakdown": {
+       "item_total": {
+        "currency_code": "USD",
+        "value": "62.00"
+       },
+       "shipping": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "handling": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "insurance": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "shipping_discount": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "discount": {
+        "currency_code": "USD",
+        "value": "0.00"
+       }
+      }
+     },
+     "payee": {
+      "email_address": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC"
+     },
+     "description": "Linen tote bag",
+     "items": [
+      {
+       "name": "Linen tote bag",
+       "unit_amount": {
+        "currency_code": "USD",
+        "value": "62.00"
+       },
+       "tax": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "quantity": "1",
+       "sku": "TOTE-02"
+      }
+     ],
+     "shipping": {
+      "name": {
+       "full_name": "John Doe"
+      },
+      "address": {
+       "address_line_1": "2211 N First St",
+       "admin_area_2": "San Jose",
+       "admin_area_1": "CA",
+       "postal_code": "95131",
+       "country_code": "US"
+      },
+      "trackers": [
+       {
+        "id": "55U43170E2019660P-9400100000000000000002",
+        "status": "SHIPPED",
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2B456142VA476284X",
+          "rel": "up",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2B456142VA476284X/trackers/55U43170E2019660P-9400100000000000000002",
+          "rel": "update",
+          "method": "PATCH"
+         }
+        ],
+        "notify_payer": false
+       }
+      ]
+     },
+     "payments": {
+      "captures": [
+       {
+        "id": "55U43170E2019660P",
+        "status": "PENDING",
+        "status_details": {
+         "reason": "BUYER_COMPLAINT"
+        },
+        "amount": {
+         "currency_code": "USD",
+         "value": "62.00"
+        },
+        "final_capture": true,
+        "seller_protection": {
+         "status": "ELIGIBLE",
+         "dispute_categories": [
+          "ITEM_NOT_RECEIVED",
+          "UNAUTHORIZED_TRANSACTION"
+         ]
+        },
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/55U43170E2019660P",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/55U43170E2019660P/refund",
+          "rel": "refund",
+          "method": "POST"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2B456142VA476284X",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-06T09:07:42Z",
+        "update_time": "2026-11-06T20:44:03Z"
+       }
+      ],
+      "refunds": [
+       {
+        "id": "15Y291320U159111S",
+        "amount": {
+         "currency_code": "USD",
+         "value": "59.35"
+        },
+        "seller_payable_breakdown": {
+         "gross_amount": {
+          "currency_code": "USD",
+          "value": "59.35"
+         },
+         "paypal_fee": {
+          "currency_code": "USD",
+          "value": "0.00"
+         },
+         "platform_fees": [
+          {
+           "amount": {
+            "currency_code": "USD",
+            "value": "0.00"
+           }
+          }
+         ],
+         "net_amount": {
+          "currency_code": "USD",
+          "value": "59.35"
+         },
+         "total_refunded_amount": {
+          "currency_code": "USD",
+          "value": "0.00"
+         }
+        },
+        "status": "PENDING",
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/refunds/15Y291320U159111S",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/55U43170E2019660P",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-06T12:44:03-08:00",
+        "update_time": "2026-11-06T12:44:03-08:00"
+       }
+      ]
+     }
+    }
+   ],
+   "payer": {
+    "name": {
+     "given_name": "John",
+     "surname": "Doe"
+    },
+    "email_address": "buyer@example.com",
+    "payer_id": "L2SQCQMXQJR42",
+    "address": {
+     "country_code": "US"
+    }
+   },
+   "create_time": "2026-11-06T08:52:49Z",
+   "update_time": "2026-11-06T09:07:42Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2B456142VA476284X",
+     "rel": "self",
+     "method": "GET"
+    }
+   ]
+  },
+  "4KA946696W852404F": {
+   "id": "4KA946696W852404F",
+   "intent": "CAPTURE",
+   "status": "COMPLETED",
+   "payment_source": {
+    "paypal": {
+     "email_address": "buyer@example.com",
+     "account_id": "L2SQCQMXQJR42",
+     "account_status": "VERIFIED",
+     "name": {
+      "given_name": "John",
+      "surname": "Doe"
+     },
+     "address": {
+      "country_code": "US"
+     }
+    }
+   },
+   "purchase_units": [
+    {
+     "reference_id": "demo-A",
+     "amount": {
+      "currency_code": "USD",
+      "value": "89.00",
+      "breakdown": {
+       "item_total": {
+        "currency_code": "USD",
+        "value": "89.00"
+       },
+       "shipping": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "handling": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "insurance": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "shipping_discount": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "discount": {
+        "currency_code": "USD",
+        "value": "0.00"
+       }
+      }
+     },
+     "payee": {
+      "email_address": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC"
+     },
+     "description": "Ceramic pour-over set",
+     "items": [
+      {
+       "name": "Ceramic pour-over set",
+       "unit_amount": {
+        "currency_code": "USD",
+        "value": "89.00"
+       },
+       "tax": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "quantity": "1",
+       "sku": "POUR-11"
+      }
+     ],
+     "shipping": {
+      "name": {
+       "full_name": "John Doe"
+      },
+      "address": {
+       "address_line_1": "2211 N First St",
+       "admin_area_2": "San Jose",
+       "admin_area_1": "CA",
+       "postal_code": "95131",
+       "country_code": "US"
+      },
+      "trackers": [
+       {
+        "id": "4F163447MV347821K-9400100000000000000089",
+        "status": "SHIPPED",
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/4KA946696W852404F",
+          "rel": "up",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/4KA946696W852404F/trackers/4F163447MV347821K-9400100000000000000089",
+          "rel": "update",
+          "method": "PATCH"
+         }
+        ],
+        "notify_payer": false
+       }
+      ]
+     },
+     "payments": {
+      "captures": [
+       {
+        "id": "4F163447MV347821K",
+        "status": "PENDING",
+        "status_details": {
+         "reason": "BUYER_COMPLAINT"
+        },
+        "amount": {
+         "currency_code": "USD",
+         "value": "89.00"
+        },
+        "final_capture": true,
+        "seller_protection": {
+         "status": "ELIGIBLE",
+         "dispute_categories": [
+          "ITEM_NOT_RECEIVED",
+          "UNAUTHORIZED_TRANSACTION"
+         ]
+        },
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/4F163447MV347821K",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/4F163447MV347821K/refund",
+          "rel": "refund",
+          "method": "POST"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/4KA946696W852404F",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-06T22:01:31Z",
+        "update_time": "2026-11-06T22:12:47Z"
+       }
+      ],
+      "refunds": [
+       {
+        "id": "0MH313470N4388236",
+        "amount": {
+         "currency_code": "USD",
+         "value": "85.40"
+        },
+        "seller_payable_breakdown": {
+         "gross_amount": {
+          "currency_code": "USD",
+          "value": "85.40"
+         },
+         "paypal_fee": {
+          "currency_code": "USD",
+          "value": "0.00"
+         },
+         "platform_fees": [
+          {
+           "amount": {
+            "currency_code": "USD",
+            "value": "0.00"
+           }
+          }
+         ],
+         "net_amount": {
+          "currency_code": "USD",
+          "value": "85.40"
+         },
+         "total_refunded_amount": {
+          "currency_code": "USD",
+          "value": "0.00"
+         }
+        },
+        "status": "PENDING",
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/refunds/0MH313470N4388236",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/4F163447MV347821K",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-06T14:11:03-08:00",
+        "update_time": "2026-11-06T14:11:03-08:00"
+       }
+      ]
+     }
+    }
+   ],
+   "payer": {
+    "name": {
+     "given_name": "John",
+     "surname": "Doe"
+    },
+    "email_address": "buyer@example.com",
+    "payer_id": "L2SQCQMXQJR42",
+    "address": {
+     "country_code": "US"
+    }
+   },
+   "create_time": "2026-11-06T21:26:05Z",
+   "update_time": "2026-11-06T22:01:32Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/4KA946696W852404F",
+     "rel": "self",
+     "method": "GET"
+    }
+   ]
+  },
+  "0CP32478A18668504": {
+   "id": "0CP32478A18668504",
+   "intent": "CAPTURE",
+   "status": "COMPLETED",
+   "payment_source": {
+    "paypal": {
+     "email_address": "buyer@example.com",
+     "account_id": "L2SQCQMXQJR42",
+     "account_status": "VERIFIED",
+     "name": {
+      "given_name": "John",
+      "surname": "Doe"
+     },
+     "address": {
+      "country_code": "US"
+     }
+    }
+   },
+   "purchase_units": [
+    {
+     "reference_id": "poc-wallet-2",
+     "amount": {
+      "currency_code": "USD",
+      "value": "35.00",
+      "breakdown": {
+       "item_total": {
+        "currency_code": "USD",
+        "value": "35.00"
+       },
+       "shipping": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "handling": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "insurance": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "shipping_discount": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "discount": {
+        "currency_code": "USD",
+        "value": "0.00"
+       }
+      }
+     },
+     "payee": {
+      "email_address": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC"
+     },
+     "description": "Wool beanie",
+     "soft_descriptor": "PAYPAL *TEST STORE",
+     "items": [
+      {
+       "name": "Wool beanie",
+       "unit_amount": {
+        "currency_code": "USD",
+        "value": "35.00"
+       },
+       "tax": {
+        "currency_code": "USD",
+        "value": "0.00"
+       },
+       "quantity": "1",
+       "sku": "HAT-03"
+      }
+     ],
+     "shipping": {
+      "name": {
+       "full_name": "John Doe"
+      },
+      "address": {
+       "address_line_1": "2211 N First St",
+       "admin_area_2": "San Jose",
+       "admin_area_1": "CA",
+       "postal_code": "95131",
+       "country_code": "US"
+      }
+     },
+     "payments": {
+      "captures": [
+       {
+        "id": "0E853853CV656352M",
+        "status": "PENDING",
+        "status_details": {
+         "reason": "BUYER_COMPLAINT"
+        },
+        "amount": {
+         "currency_code": "USD",
+         "value": "35.00"
+        },
+        "final_capture": true,
+        "seller_protection": {
+         "status": "ELIGIBLE",
+         "dispute_categories": [
+          "ITEM_NOT_RECEIVED",
+          "UNAUTHORIZED_TRANSACTION"
+         ]
+        },
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/0E853853CV656352M",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/0E853853CV656352M/refund",
+          "rel": "refund",
+          "method": "POST"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/0CP32478A18668504",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-06T20:46:32Z",
+        "update_time": "2026-11-06T20:55:17Z"
+       }
+      ],
+      "refunds": [
+       {
+        "id": "7KJ27412SX015425F",
+        "amount": {
+         "currency_code": "USD",
+         "value": "33.29"
+        },
+        "seller_payable_breakdown": {
+         "gross_amount": {
+          "currency_code": "USD",
+          "value": "33.29"
+         },
+         "paypal_fee": {
+          "currency_code": "USD",
+          "value": "0.00"
+         },
+         "platform_fees": [
+          {
+           "amount": {
+            "currency_code": "USD",
+            "value": "0.00"
+           }
+          }
+         ],
+         "net_amount": {
+          "currency_code": "USD",
+          "value": "33.29"
+         },
+         "total_refunded_amount": {
+          "currency_code": "USD",
+          "value": "0.00"
+         }
+        },
+        "status": "PENDING",
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/refunds/7KJ27412SX015425F",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/0E853853CV656352M",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-06T12:52:33-08:00",
+        "update_time": "2026-11-06T12:52:33-08:00"
+       }
+      ]
+     }
+    }
+   ],
+   "payer": {
+    "name": {
+     "given_name": "John",
+     "surname": "Doe"
+    },
+    "email_address": "buyer@example.com",
+    "payer_id": "L2SQCQMXQJR42",
+    "address": {
+     "country_code": "US"
+    }
+   },
+   "create_time": "2026-11-06T20:45:45Z",
+   "update_time": "2026-11-06T20:46:32Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/0CP32478A18668504",
+     "rel": "self",
+     "method": "GET"
+    }
+   ]
+  }
+ },
+ "trackers": {
+  "55U43170E2019660P-9400100000000000000002": {
+   "transaction_id": "55U43170E2019660P",
+   "tracking_number": "9400100000000000000002",
+   "status": "SHIPPED",
+   "shipment_date": "2026-11-06",
+   "carrier": "USPS",
+   "notify_buyer": false,
+   "created_time": "2026-11-06T09:07:43.000Z",
+   "shipment_direction": "FORWARD",
+   "shipment_uploader": "MERCHANT",
+   "record_created_by": "SELLER",
+   "order_shippable_status": "NOT_SHIPPABLE",
+   "links": [
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/55U43170E2019660P-9400100000000000000002",
+     "rel": "self",
+     "encType": "application/json"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/55U43170E2019660P-9400100000000000000002",
+     "rel": "replace",
+     "method": "PUT",
+     "encType": "application/json"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers-batch",
+     "rel": "create",
+     "method": "POST",
+     "encType": "application/json"
+    }
+   ]
+  },
+  "4F163447MV347821K-9400100000000000000089": {
+   "transaction_id": "4F163447MV347821K",
+   "tracking_number": "9400100000000000000089",
+   "status": "SHIPPED",
+   "shipment_date": "2026-11-06",
+   "carrier": "USPS",
+   "notify_buyer": false,
+   "created_time": "2026-11-06T22:12:13.000Z",
+   "shipment_direction": "FORWARD",
+   "shipment_uploader": "MERCHANT",
+   "record_created_by": "SELLER",
+   "order_shippable_status": "NOT_SHIPPABLE",
+   "links": [
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/4F163447MV347821K-9400100000000000000089",
+     "rel": "self",
+     "encType": "application/json"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/4F163447MV347821K-9400100000000000000089",
+     "rel": "replace",
+     "method": "PUT",
+     "encType": "application/json"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers-batch",
+     "rel": "create",
+     "method": "POST",
+     "encType": "application/json"
+    }
+   ]
+  }
+ }
+}

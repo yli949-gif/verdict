@@ -62,6 +62,7 @@ TRANSITIONS: dict[tuple[str, str], str] = {
     ("BUYER_TURN", "accept_claim"): "RESOLVED",
     ("REVIEW_CHARGEBACK", "provide_supporting_info"): "REVIEW_CHARGEBACK",
     ("REVIEW_CHARGEBACK", "accept_claim"): "RESOLVED",
+    ("REVIEW_CHARGEBACK", "time"): "SELLER_TURN_EVIDENCE_ONLY",  # observed 2026-11-06 ~22:00: PayPal returned the case with a 70h due date
 }
 
 

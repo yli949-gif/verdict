@@ -8,7 +8,7 @@ from hypothesis import strategies as st
 
 from verdict.bundle import Address, EvidenceBundle, Item, Tracker
 from verdict.contract import validate
-from verdict.engine import ACTION_FOR, decide
+from verdict.engine import ACTION_FOR, AUTO_EVIDENCE_COST, decide
 from verdict.statemachine import STATES, links_for
 
 NOW = datetime(2026, 11, 7, tzinfo=UTC)
@@ -120,5 +120,5 @@ def test_adding_shipment_proof_never_turns_contest_into_refund(sb):
 def test_expected_value_bounds(sb, cost):
     _, b = sb
     v = decide(b, handling_cost=cost)
-    assert -cost - 1e-6 <= v.expected_value <= b.amount + 1e-6
+    assert -max(cost, AUTO_EVIDENCE_COST) - 1e-6 <= v.expected_value <= b.amount + 1e-6
     assert v.ev_refund_now == 0.0

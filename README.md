@@ -54,6 +54,13 @@ Each rule carries its policy basis; see `verdict/engine.py` and `docs/policy_sou
 
 ## Run it
 
+**No credentials? Replay mode.** Real sandbox cases captured on 2026-11-06 (scrubbed) with the observed state machine simulating PayPal's responses:
+```bash
+pip install -e . && VERDICT_MODE=replay uvicorn verdict.app:app --port 8787   # open http://localhost:8787
+```
+Everything works — verdicts, counterfactuals, confirm-and-execute, audit — and the UI says it is a replay. `render.yaml` deploys this mode on Render with one click; `docs/postman/` has a Postman collection for the API.
+
+**Live sandbox mode.**
 ```bash
 pip install -e .                         # Python 3.11+
 cp .env.example .env                     # add PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET (sandbox app with Disputes + Transaction Search enabled)

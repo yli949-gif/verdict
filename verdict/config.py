@@ -28,12 +28,19 @@ class Settings:
     paypal_client_secret: str = os.environ.get("PAYPAL_CLIENT_SECRET", "")
     paypal_environment: str = os.environ.get("PAYPAL_ENVIRONMENT", "sandbox")
     anthropic_api_key: str = os.environ.get("ANTHROPIC_API_KEY", "")
+    mode: str = os.environ.get("VERDICT_MODE", "")  # "replay" | "live" | "" (auto: live if credentials, else replay)
     handling_cost_usd: float = float(os.environ.get("VERDICT_HANDLING_COST_USD", "8"))
     data_dir: Path = Path(os.environ.get("VERDICT_DATA_DIR", Path(__file__).resolve().parent.parent / "data"))
 
     @property
     def paypal_base_url(self) -> str:
         return "https://api-m.paypal.com" if self.paypal_environment == "live" else "https://api-m.sandbox.paypal.com"
+
+    @property
+    def replay(self) -> bool:
+        if self.mode:
+            return self.mode == "replay"
+        return not (self.paypal_client_id and self.paypal_client_secret)
 
     @property
     def llm_enabled(self) -> bool:

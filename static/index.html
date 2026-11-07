@@ -92,7 +92,7 @@ const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 
 async function boot(){
   const h=await fetch("/api/health").then(r=>r.json());
-  $("#env").innerHTML=`PayPal <b>${h.environment}</b> · Claude explanations <b>${h.llm?"on":"off"}</b>`;
+  $("#env").innerHTML=`PayPal <b>${h.environment}</b> · Claude explanations <b>${h.llm?"on":"off"}</b>${h.environment==="replay"?`<br><span class="note">Replay of real sandbox cases (${h.replay_snapshot}); actions are simulated with the observed state machine.</span>`:""}`;
   const list=await fetch("/api/disputes").then(r=>r.json());
   $("#cases").innerHTML=list.length?list.map(d=>`<button class="case" data-id="${d.dispute_id}"><div class="id">${d.dispute_id}</div>
     <div class="meta"><span>${(d.reason||"").replace("MERCHANDISE_OR_SERVICE_","").replaceAll("_"," ").toLowerCase()}</span><span>${d.amount?money(d.amount.value,d.amount.currency_code):""}</span></div>

@@ -1,0 +1,170 @@
+{
+ "info": {
+  "name": "Verdict \u2014 dispute decision API",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+  "description": "Verdict reads a PayPal seller's disputes, cross-checks seller protection, tracking, address and PayPal's allowed actions, and returns an evidence-based recommendation. Run against a local server (replay mode needs no credentials)."
+ },
+ "variable": [
+  {
+   "key": "baseUrl",
+   "value": "http://localhost:8787"
+  },
+  {
+   "key": "disputeId",
+   "value": "PP-R-GHY-10196892"
+  }
+ ],
+ "item": [
+  {
+   "name": "Health",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/health",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "health"
+     ]
+    },
+    "description": "Shows live vs replay mode and whether Claude explanations are on."
+   }
+  },
+  {
+   "name": "List disputes",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/disputes",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "disputes"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "Get verdict for a dispute",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/disputes/{{disputeId}}?llm=false",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "disputes",
+      "{{disputeId}}?llm=false"
+     ]
+    },
+    "description": "Evidence bundle + verdict + rules + counterfactuals + robustness."
+   }
+  },
+  {
+   "name": "Tell Verdict about seller-side evidence",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/disputes/{{disputeId}}/facts",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "disputes",
+      "{{disputeId}}",
+      "facts"
+     ]
+    },
+    "description": "",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n \"seller_has_signature_proof\": true\n}"
+    }
+   }
+  },
+  {
+   "name": "Execute the recommended action (requires confirmed=true)",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/disputes/{{disputeId}}/execute",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "disputes",
+      "{{disputeId}}",
+      "execute"
+     ]
+    },
+    "description": "Re-reads PayPal's links at call time; refuses anything not allowed. In replay mode the state machine is simulated.",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n \"confirmed\": true,\n \"message\": \"Shipped via USPS; tracking attached.\"\n}"
+    }
+   }
+  },
+  {
+   "name": "Audit trail",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/audit?dispute_id={{disputeId}}",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "audit?dispute_id={{disputeId}}"
+     ]
+    },
+    "description": ""
+   }
+  }
+ ]
+}

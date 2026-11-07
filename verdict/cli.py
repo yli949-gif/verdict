@@ -6,9 +6,11 @@ import argparse
 import json
 
 from .actions import execute
+from .config import settings
 from .engine import decide
 from .narrative import explain
 from .paypal import PayPalClient
+from .replay import ReplayClient
 from .sync import fetch_bundle, list_dispute_ids
 
 
@@ -26,7 +28,7 @@ def main() -> None:
     e.add_argument("--action")
     e.add_argument("--message")
     a = ap.parse_args()
-    client = PayPalClient()
+    client = ReplayClient() if settings.replay else PayPalClient()
     if a.cmd == "list":
         for d in list_dispute_ids(client):
             amt = d.get("dispute_amount") or {}

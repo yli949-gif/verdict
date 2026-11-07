@@ -15,6 +15,7 @@ from .config import settings
 from .engine import Verdict, counterfactuals, decide, robustness
 from .narrative import explain
 from .paypal import PayPalClient, PayPalError
+from .replay import ReplayClient
 from .sync import fetch_bundle, list_dispute_ids, save_seller_fact
 
 app = FastAPI(title="Verdict", version="0.1.0")
@@ -23,12 +24,10 @@ _client: PayPalClient | None = None
 _cache: dict[str, tuple[EvidenceBundle, Verdict, dict]] = {}
 
 
-def client() -> PayPalClient:
+def client():
     global _client
     if _client is None:
-        if not settings.paypal_client_id:
-            raise HTTPException(500, "PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET not set (see .env.example)")
-        _client = PayPalClient()
+        _client = ReplayClient() if settings.replay else PayPalClient()
     return _client
 
 
@@ -39,7 +38,12 @@ def index():
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "environment": settings.paypal_environment, "llm": settings.llm_enabled}
+    return {
+        "ok": True,
+        "environment": "replay" if settings.replay else settings.paypal_environment,
+        "llm": settings.llm_enabled,
+        "replay_snapshot": getattr(client(), "snapshot_name", None),
+    }
 
 
 @app.get("/api/disputes")

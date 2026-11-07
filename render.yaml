@@ -1,0 +1,14 @@
+# One-click deploy on Render (sponsor tool). Replay mode needs no secrets; add PayPal/Anthropic
+# env vars in the Render dashboard to switch to live sandbox mode.
+services:
+  - type: web
+    name: verdict
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.lock && pip install -e .
+    startCommand: uvicorn verdict.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: VERDICT_MODE
+        value: replay
+      - key: PYTHON_VERSION
+        value: "3.13"
