@@ -78,6 +78,14 @@ To create test disputes: pay a sandbox order from a sandbox *personal* account, 
 - PayPal APIs used: Disputes v1 (list/get, provide-evidence, accept-claim, make-offer, send-message, escalate, provide-supporting-info), Payments v2 captures, Orders v2 (+ tracking), Shipment Tracking v1, Transaction Search v1. `verdict/paypal.py` is a thin client; `verdict/tools.py` exposes three toolkit-shaped tools (`list_disputes`, `get_dispute_verdict`, `execute_dispute_verdict`) for OpenAI/Anthropic/LangChain agents — the official Python Agent Toolkit (1.1.0) ships no dispute tools, so these are shaped to be upstreamable.
 - AI: Claude (`claude-sonnet-5-5` by default) for explanations and buyer notes, behind a faithfulness check; the decision itself is deterministic on purpose — money decisions need rules you can read and test.
 
+## Security model (short)
+
+- **Buyer text is data, never instructions.** The rule engine never reads buyer messages for decisions; Claude sees them inside a JSON field with a system prompt that forbids changing the verdict, and its output is checked for invented numbers and contradictions. Two injection cases are in the eval set.
+- **Nothing is sent without a human.** The API refuses `execute` without `confirmed: true`; the agent tools carry the same flag; the UI requires an explicit checkbox.
+- **PayPal decides what is possible.** Links are re-read at execution time; bodies are validated against PayPal's OpenAPI spec; every PayPal call carries a fresh `PayPal-Request-Id`.
+- **Secrets** only in environment variables; `.env` is git-ignored; CI runs gitleaks; sandbox fixtures are scrubbed of account emails.
+- **Audit**: every attempted action (success or refusal) is appended to `data/audit.jsonl` with request, response and the status transition.
+
 ## Limitations (please read)
 
 - The oracle is our reading of PayPal's policy pages. PayPal's adjudication uses signals no API exposes (buyer history, carrier scans, fraud models). We report policy-agreement, never win rates.
