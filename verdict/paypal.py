@@ -16,7 +16,7 @@ import json
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Protocol
 
 import httpx
 
@@ -40,6 +40,33 @@ class PayPalError(Exception):
             if det:
                 return det[0].get("issue", "")
         return ""
+
+
+class DisputeClient(Protocol):
+    """What the engine/executor need from a client: live PayPalClient or ReplayClient."""
+
+    def list_disputes(self, dispute_state: str | None = None, page_size: int = 50, **params: Any) -> list[dict]: ...
+    def get_dispute(self, dispute_id: str) -> dict: ...
+    def get_capture(self, capture_id: str) -> dict: ...
+    def get_order(self, order_id: str) -> dict: ...
+    def get_tracker(self, tracker_id: str) -> dict: ...
+    def send_message(self, dispute: dict, message: str) -> dict: ...
+    def provide_evidence(
+        self, dispute: dict, evidences: list[dict], return_shipping_address: dict | None = None, file: tuple[str, bytes, str] | None = None
+    ) -> dict: ...
+    def provide_supporting_info(self, dispute: dict, notes: str, file: tuple[str, bytes, str] | None = None) -> dict: ...
+    def accept_claim(
+        self,
+        dispute: dict,
+        note: str,
+        accept_claim_type: str = "REFUND",
+        refund_amount: dict | None = None,
+        return_shipping_address: dict | None = None,
+    ) -> dict: ...
+    def make_offer(
+        self, dispute: dict, note: str, offer_type: str, offer_amount: dict | None = None, return_shipping_address: dict | None = None
+    ) -> dict: ...
+    def escalate(self, dispute: dict, note: str) -> dict: ...
 
 
 class ActionNotAllowed(Exception):

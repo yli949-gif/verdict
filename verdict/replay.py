@@ -110,7 +110,7 @@ class ReplayClient:
         live = self.s["disputes"][dispute["dispute_id"]]
         mutate(live)
         status, state, links = AFTER[action]
-        if status:
+        if status and links is not None:
             live["status"], live["dispute_state"] = status, state
             live["links"] = [{"rel": "self"}] + [{"rel": r} for r in links]
         live["update_time"] = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")

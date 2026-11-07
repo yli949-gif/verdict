@@ -151,9 +151,9 @@ async def paypal_webhook(request: Request):
     if event.get("event_type") not in EVENTS:
         return {"ignored": event.get("event_type")}
     dispute_id = (event.get("resource") or {}).get("dispute_id")
-    _cache.pop(dispute_id, None)
     verdict = None
     if dispute_id:
+        _cache.pop(dispute_id, None)
         try:
             verdict = _analyze(dispute_id, False)["verdict"]
         except HTTPException:

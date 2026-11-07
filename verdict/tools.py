@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 
 from .actions import execute
 from .engine import decide
-from .paypal import PayPalClient
+from .paypal import DisputeClient
 from .sync import fetch_bundle, list_dispute_ids
 
 
@@ -39,7 +39,7 @@ class ExecuteVerdict(BaseModel):
     confirmed: bool = Field(False, description="Must be true. Set only after a human reviewed the verdict.")
 
 
-def _list(client: PayPalClient, params: dict) -> str:
+def _list(client: DisputeClient, params: dict) -> str:
     p = ListDisputes(**params)
     items = list_dispute_ids(client)
     if p.dispute_state:
@@ -49,14 +49,14 @@ def _list(client: PayPalClient, params: dict) -> str:
     )
 
 
-def _get_verdict(client: PayPalClient, params: dict) -> str:
+def _get_verdict(client: DisputeClient, params: dict) -> str:
     p = DisputeId(**params)
     bundle, _ = fetch_bundle(client, p.dispute_id)
     v = decide(bundle)
     return json.dumps({"verdict": v.to_dict(), "evidence_bundle": json.loads(bundle.model_dump_json(exclude={"now"}))})
 
 
-def _execute(client: PayPalClient, params: dict) -> str:
+def _execute(client: DisputeClient, params: dict) -> str:
     p = ExecuteVerdict(**params)
     bundle, _ = fetch_bundle(client, p.dispute_id)
     v = decide(bundle)
@@ -105,7 +105,7 @@ def as_anthropic_tools() -> list[dict]:
     return [{"name": t["method"], "description": t["description"], "input_schema": t["args_schema"].model_json_schema()} for t in tools]
 
 
-def run(client: PayPalClient, method: str, params: dict) -> str:
+def run(client: DisputeClient, method: str, params: dict) -> str:
     for t in tools:
         if t["method"] == method:
             return t["execute"](client, params)

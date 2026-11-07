@@ -12,7 +12,7 @@ from typing import Any
 from .config import settings
 from .contract import ContractError
 from .engine import Verdict
-from .paypal import ActionNotAllowed, PayPalClient, PayPalError
+from .paypal import ActionNotAllowed, DisputeClient, PayPalError
 
 AUDIT = settings.data_dir / "audit.jsonl"
 
@@ -33,7 +33,7 @@ def read_audit(dispute_id: str | None = None, limit: int = 200) -> list[dict]:
 
 
 def execute(
-    client: PayPalClient,
+    client: DisputeClient,
     verdict: Verdict,
     *,
     action: str | None = None,

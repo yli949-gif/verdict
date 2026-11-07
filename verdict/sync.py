@@ -6,7 +6,7 @@ import json
 
 from .bundle import EvidenceBundle, bundle_from_paypal
 from .config import settings
-from .paypal import PayPalClient, PayPalError
+from .paypal import DisputeClient, PayPalError
 
 RAW = settings.data_dir / "raw"
 RAW.mkdir(parents=True, exist_ok=True)
@@ -27,7 +27,7 @@ def save_seller_fact(dispute_id: str, facts: dict) -> None:
     SELLER_FACTS.write_text(json.dumps(all_, indent=2))
 
 
-def fetch_bundle(client: PayPalClient, dispute_id: str) -> tuple[EvidenceBundle, dict]:
+def fetch_bundle(client: DisputeClient, dispute_id: str) -> tuple[EvidenceBundle, dict]:
     dispute = client.get_dispute(dispute_id)
     _save(f"dispute_{dispute_id}", dispute)
     txn = (dispute.get("disputed_transactions") or [{}])[0]
@@ -59,7 +59,7 @@ def fetch_bundle(client: PayPalClient, dispute_id: str) -> tuple[EvidenceBundle,
     return bundle_from_paypal(dispute, capture, order, facts), dispute
 
 
-def list_dispute_ids(client: PayPalClient) -> list[dict]:
+def list_dispute_ids(client: DisputeClient) -> list[dict]:
     """All disputes the merchant can see, newest first (actionable ones first)."""
     seen: dict[str, dict] = {}
     for state in ("REQUIRED_ACTION", "REQUIRED_OTHER_PARTY_ACTION", "UNDER_PAYPAL_REVIEW", "RESOLVED", "OPEN_INQUIRIES"):
