@@ -17,12 +17,13 @@ Small sellers lose twice on disputes: they refund cases they would have kept (tr
 Python 3.13, FastAPI, httpx, a vanilla single-page UI. `verdict/paypal.py` wraps Disputes v1, Payments v2, Orders v2, Shipment Tracking v1 and Transaction Search v1; every write calls `require_link()` first. The decision engine is deterministic and policy-cited by design — money decisions need rules you can read and test. Claude (`claude-sonnet-5-5`) sits on top as an explainer. `verdict/tools.py` exposes three toolkit-shaped tools (list disputes, get verdict, execute verdict) for agent frameworks, since the official Python Agent Toolkit ships no dispute tools.
 
 ## Evaluation
-95 cases (3 captured from the sandbox, 77 synthetic bundles on the real schema, 15 messy/adversarial incl. prompt injection in buyer messages) against an independent policy decision table. Verdict: 100% agreement with the policy table, 0% unsafe actions. Refund-everything: 56% (leaves money on the table in 32% of cases). Trusting `seller_protection` alone: 36% of its recommendations are actions PayPal would refuse. Claude alone, zero-shot on the same bundles: 66%, and it contests 20% of cases policy says to refund. Independent checks: PayPal rejected 11/11 gate-bypassing probes; every generated payload validates against PayPal's OpenAPI spec (Hypothesis, 400 random bundles); a second model rating from policy text alone agrees at κ≈0.6; 90/95 verdicts are stable across a grid of the EV assumptions. Live sandbox replay on 2026-11-06: send-message, provide-evidence (multipart + file), provide-supporting-info and escalate all returned 200 and moved the dispute as expected.
+95 cases (3 captured from the sandbox, 77 synthetic bundles on the real schema, 15 messy/adversarial incl. prompt injection in buyer messages) against an independent policy decision table. Verdict: 100% agreement with the policy table, 0% unsafe actions. Refund-everything: 56% (leaves money on the table in 32% of cases). Trusting `seller_protection` alone: 36% of its recommendations are actions PayPal would refuse. Claude alone, zero-shot on the same bundles: 66%, and it contests 20% of cases policy says to refund. Independent checks: PayPal rejected 11/11 gate-bypassing probes; every generated payload validates against PayPal's OpenAPI spec (Hypothesis, 400 random bundles); a second model rating from policy text alone agrees at κ≈0.6; 90/95 verdicts are stable across a grid of the EV assumptions. Live sandbox: send-message, provide-evidence (multipart + file), provide-supporting-info, escalate and accept-claim all returned 200 and moved disputes as expected; the demo video shows a live provide-evidence and a live accept-claim (PayPal resolved it: SELLER_ISSUED_REFUND).
 
 ## Challenges
 - The documented sandbox `POST /v1/customer/disputes` rejected every documented body; we file test disputes from a buyer sandbox account instead and documented the observed state machine.
 - Tracking present *before* the buyer files sends the case straight to PayPal review with no seller window — the engine had to learn that "proof on file + under review" means *do nothing, do not refund*.
 - The order object omits the carrier; it only exists in the Shipment Tracking API.
+- In the CHARGEBACK stage the sandbox rejected the very evidence types it listed as requested (`EVIDENCE_TYPE_IS_NOT_ALLOWED`); Verdict now falls back to `OTHER` carrying the same facts, and shows what PayPal asked for.
 - Dispute-level `seller_protection_eligible` populates asynchronously, so the engine reads the capture's `seller_protection` instead.
 
 ## What we learned
@@ -40,16 +41,11 @@ python, fastapi, httpx, pydantic, paypal-disputes-api, paypal-orders-api, paypal
 
 ---
 
-# 3-minute demo script (video)
+# Demo video (docs/demo.mp4, 2:31) — what it shows
+0:00 Inbox of five live sandbox disputes, sorted by time left.
+0:13 Case 1 ($74, item not received): ledger of facts from PayPal (seller protection ELIGIBLE, USPS tracking to the PayPal address, allowed actions), rule R1 with policy text, Claude explanation, EV +$58 vs $0, exact PayPal call → confirm → live provide-evidence → status waiting-for-seller → under review, audit entry.
+1:05 Case 2 ($28, no tracking): verdict refund now, counterfactual "add tracking → respond", confirm → live accept-claim → PayPal later resolves it SELLER_ISSUED_REFUND.
+1:45 Case 3 (proof on file, PayPal reviewing): nothing to do, do not refund. 中文 toggle.
+2:10 Results and independent checks; repo link.
 
-0:00 Title card: "Verdict — an honest dispute desk for PayPal sellers."
-0:05 Problem (voice): "Most small sellers refund every dispute or fight every dispute. Both lose money. The hard part is the decision."
-0:15 UI: three live sandbox disputes. Open case 1 ($89, item not received).
-0:25 Ledger: "Every fact here comes from PayPal — seller protection on the capture, USPS tracking on the order, the address match, and the five actions PayPal allows right now."
-0:45 Rules: "R1 fires, with the policy text behind it. Contesting is worth +$70 vs $0 for refunding. The percentage is an assumption we state, not a prediction of PayPal."
-1:00 Action box: "The exact PayPal call is shown. I confirm." Click. "PayPal accepted it: status moved to under review, evidence is on the dispute, audit entry written."
-1:25 Case 2 (under review, proof on file): "Verdict says: nothing to do — and do not refund. It never offers an action PayPal's links don't allow."
-1:45 Case 3 (no tracking): "Here the honest answer is refund now. Fighting without proof is a fee and a lost case."
-2:05 中文 toggle + Claude explanation: "Explanations in Chinese for sellers who don't work in English; the model explains, it never decides."
-2:20 Results slide: table from eval/results.md. "99% policy agreement, 0% unsafe actions, versus 56% for refund-everything."
-2:40 Limitations + close: "Verdict recommends under PayPal's published rules; PayPal decides. Code, eval and audit log are in the repo."
+Voice-over is optional; the captions carry the narration. If re-recording with voice, keep the three cases and the order above.

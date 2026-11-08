@@ -12,7 +12,7 @@ def test_webhook_unverified_is_rejected(monkeypatch, tmp_path):
 
     appmod._client = None
     c = TestClient(appmod.app)
-    r = c.post("/webhooks/paypal", json=sample_event("PP-R-GHY-10196892"))
+    r = c.post("/webhooks/paypal", json=sample_event("PP-R-AKW-10197075"))
     assert r.status_code == 401
 
 
@@ -26,10 +26,10 @@ def test_webhook_reevaluates_dispute_in_replay(monkeypatch, tmp_path):
     monkeypatch.setattr(appmod, "settings", Settings())
     appmod._client = None
     c = TestClient(appmod.app)
-    r = c.post("/webhooks/paypal", json=sample_event("PP-R-GHY-10196892"))
+    r = c.post("/webhooks/paypal", json=sample_event("PP-R-AKW-10197075"))
     assert r.status_code == 200
     j = r.json()
-    assert j["dispute_id"] == "PP-R-GHY-10196892" and j["verdict"] == "RESPOND_WITH_EVIDENCE" and j["verified"] is True
+    assert j["dispute_id"] == "PP-R-AKW-10197075" and j["verdict"] == "RESPOND_WITH_EVIDENCE" and j["verified"] is True
     inbox = c.get("/api/inbox").json()
-    assert inbox and inbox[0]["dispute_id"] in {"PP-R-GHY-10196892", "PP-R-XSW-10196894"}
+    assert inbox and inbox[0]["dispute_id"] in {"PP-R-AKW-10197075", "PP-R-JHT-10197076", "PP-R-XSW-10196894"}
     assert all(k in inbox[0] for k in ("deadline_hours", "verdict", "urgent"))

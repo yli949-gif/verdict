@@ -1,9 +1,293 @@
 {
  "disputes": {
+  "PP-R-JHT-10197076": {
+   "dispute_id": "PP-R-JHT-10197076",
+   "create_time": "2026-11-08T04:37:15.865Z",
+   "update_time": "2026-11-08T04:40:43.577Z",
+   "disputed_transactions": [
+    {
+     "buyer_transaction_id": "4XU554898U700445X",
+     "seller_transaction_id": "9UL643661X493791L",
+     "create_time": "2026-11-08T04:32:21.000Z",
+     "transaction_status": "HELD",
+     "gross_amount": {
+      "currency_code": "USD",
+      "value": "28.00"
+     },
+     "buyer": {
+      "email": "buyer@example.com",
+      "payer_id": "L2SQCQMXQJR42",
+      "name": "John Doe"
+     },
+     "seller": {
+      "email": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC",
+      "name": "Test Store"
+     },
+     "items": [
+      {
+       "item_id": "TWL-07",
+       "item_name": "Cotton tea towels (set of 3)",
+       "item_quantity": "1",
+       "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+       "item_type": "PRODUCT"
+      }
+     ],
+     "seller_protection_eligible": true,
+     "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+    }
+   ],
+   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+   "status": "WAITING_FOR_SELLER_RESPONSE",
+   "dispute_amount": {
+    "currency_code": "USD",
+    "value": "28.00"
+   },
+   "dispute_state": "REQUIRED_ACTION",
+   "fund_movements": [
+    {
+     "party": "RECEIVER",
+     "amount": {
+      "currency_code": "USD",
+      "value": "26.53"
+     },
+     "initiated_time": "2026-11-08T04:40:34.000Z",
+     "type": "DEBIT",
+     "reason": "HOLD_PLACED"
+    }
+   ],
+   "dispute_life_cycle_stage": "INQUIRY",
+   "dispute_channel": "INTERNAL",
+   "messages": [
+    {
+     "posted_by": "BUYER",
+     "time_posted": "2026-11-08T04:37:15.865Z",
+     "content": "The tea towels never showed up. No tracking was ever sent to me."
+    }
+   ],
+   "extensions": {
+    "merchant_contacted": false,
+    "buyer_contacted_time": "2026-11-08T04:37:15.147Z"
+   },
+   "evidences": [
+    {
+     "evidence_type": "CREATE",
+     "notes": "The tea towels never showed up. No tracking was ever sent to me.",
+     "source": "SUBMITTED_BY_BUYER",
+     "date": "2026-11-08T04:37:15.865Z",
+     "dispute_life_cycle_stage": "INQUIRY"
+    },
+    {
+     "evidence_type": "PROOF_OF_FULFILLMENT",
+     "source": "REQUESTED_FROM_SELLER",
+     "date": "2026-11-08T04:40:43.577Z"
+    }
+   ],
+   "seller_response_due_date": "2026-11-28T04:37:15.865Z",
+   "offer": {
+    "buyer_requested_amount": {
+     "currency_code": "USD",
+     "value": "28.00"
+    }
+   },
+   "refund_details": {
+    "allowed_refund_amount": {
+     "currency_code": "USD",
+     "value": "28.00"
+    }
+   },
+   "allowed_response_options": {
+    "accept_claim": {
+     "accept_claim_types": [
+      "PARTIAL_REFUND",
+      "REFUND"
+     ]
+    },
+    "make_offer": {
+     "offer_types": [
+      "REFUND"
+     ]
+    }
+   },
+   "links": [
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-JHT-10197076",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-JHT-10197076/accept-claim",
+     "rel": "accept_claim",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-JHT-10197076/make-offer",
+     "rel": "make_offer",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-JHT-10197076/escalate",
+     "rel": "escalate",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-JHT-10197076/send-message",
+     "rel": "send_message",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-JHT-10197076/provide-evidence",
+     "rel": "provide_evidence",
+     "method": "POST"
+    }
+   ]
+  },
+  "PP-R-AKW-10197075": {
+   "dispute_id": "PP-R-AKW-10197075",
+   "create_time": "2026-11-08T04:35:27.982Z",
+   "update_time": "2026-11-08T04:38:52.157Z",
+   "disputed_transactions": [
+    {
+     "buyer_transaction_id": "9R269685HA7615412",
+     "seller_transaction_id": "8W1446543S561971V",
+     "create_time": "2026-11-08T04:32:19.000Z",
+     "transaction_status": "HELD",
+     "gross_amount": {
+      "currency_code": "USD",
+      "value": "74.00"
+     },
+     "buyer": {
+      "email": "buyer@example.com",
+      "payer_id": "L2SQCQMXQJR42",
+      "name": "John Doe"
+     },
+     "seller": {
+      "email": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC",
+      "name": "Test Store"
+     },
+     "items": [
+      {
+       "item_id": "BRD-21",
+       "item_name": "Walnut cutting board",
+       "item_quantity": "1",
+       "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+       "item_type": "PRODUCT"
+      }
+     ],
+     "seller_protection_eligible": true,
+     "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+    }
+   ],
+   "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+   "status": "WAITING_FOR_SELLER_RESPONSE",
+   "dispute_amount": {
+    "currency_code": "USD",
+    "value": "74.00"
+   },
+   "dispute_state": "REQUIRED_ACTION",
+   "fund_movements": [
+    {
+     "party": "RECEIVER",
+     "amount": {
+      "currency_code": "USD",
+      "value": "70.93"
+     },
+     "initiated_time": "2026-11-08T04:38:34.000Z",
+     "type": "DEBIT",
+     "reason": "HOLD_PLACED"
+    }
+   ],
+   "dispute_life_cycle_stage": "INQUIRY",
+   "dispute_channel": "INTERNAL",
+   "messages": [
+    {
+     "posted_by": "BUYER",
+     "time_posted": "2026-11-08T04:35:27.982Z",
+     "content": "Ordered the cutting board ten days ago and nothing has arrived."
+    }
+   ],
+   "extensions": {
+    "merchant_contacted": false,
+    "buyer_contacted_time": "2026-11-08T04:35:27.244Z"
+   },
+   "evidences": [
+    {
+     "evidence_type": "CREATE",
+     "notes": "Ordered the cutting board ten days ago and nothing has arrived.",
+     "source": "SUBMITTED_BY_BUYER",
+     "date": "2026-11-08T04:35:27.982Z",
+     "dispute_life_cycle_stage": "INQUIRY"
+    },
+    {
+     "evidence_type": "PROOF_OF_FULFILLMENT",
+     "source": "REQUESTED_FROM_SELLER",
+     "date": "2026-11-08T04:38:52.157Z"
+    }
+   ],
+   "seller_response_due_date": "2026-11-28T04:35:27.982Z",
+   "offer": {
+    "buyer_requested_amount": {
+     "currency_code": "USD",
+     "value": "74.00"
+    }
+   },
+   "refund_details": {
+    "allowed_refund_amount": {
+     "currency_code": "USD",
+     "value": "74.00"
+    }
+   },
+   "allowed_response_options": {
+    "accept_claim": {
+     "accept_claim_types": [
+      "PARTIAL_REFUND",
+      "REFUND"
+     ]
+    },
+    "make_offer": {
+     "offer_types": [
+      "REFUND"
+     ]
+    }
+   },
+   "links": [
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-AKW-10197075",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-AKW-10197075/accept-claim",
+     "rel": "accept_claim",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-AKW-10197075/provide-evidence",
+     "rel": "provide_evidence",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-AKW-10197075/send-message",
+     "rel": "send_message",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-AKW-10197075/escalate",
+     "rel": "escalate",
+     "method": "POST"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-AKW-10197075/make-offer",
+     "rel": "make_offer",
+     "method": "POST"
+    }
+   ]
+  },
   "PP-R-GHY-10196892": {
    "dispute_id": "PP-R-GHY-10196892",
    "create_time": "2026-11-06T20:41:03.336Z",
-   "update_time": "2026-11-07T03:10:44.144Z",
+   "update_time": "2026-11-08T04:27:55.791Z",
    "disputed_transactions": [
     {
      "buyer_transaction_id": "5EA79313JU237201U",
@@ -38,12 +322,12 @@
     }
    ],
    "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
-   "status": "WAITING_FOR_SELLER_RESPONSE",
+   "status": "UNDER_REVIEW",
    "dispute_amount": {
     "currency_code": "USD",
     "value": "62.00"
    },
-   "dispute_state": "REQUIRED_ACTION",
+   "dispute_state": "UNDER_PAYPAL_REVIEW",
    "fund_movements": [
     {
      "party": "RECEIVER",
@@ -71,25 +355,22 @@
      "dispute_life_cycle_stage": "INQUIRY"
     },
     {
-     "evidence_type": "PROOF_OF_FULFILLMENT",
-     "source": "REQUESTED_FROM_SELLER",
-     "date": "2026-11-07T03:10:19.653Z",
-     "dispute_life_cycle_stage": "CHARGEBACK"
-    },
-    {
-     "evidence_type": "PROOF_OF_REFUND",
-     "source": "REQUESTED_FROM_SELLER",
-     "date": "2026-11-07T03:10:19.653Z",
-     "dispute_life_cycle_stage": "CHARGEBACK"
-    },
-    {
-     "evidence_type": "PROOF_OF_DELIVERY_SIGNATURE",
-     "source": "REQUESTED_FROM_SELLER",
-     "date": "2026-11-07T03:10:19.653Z",
+     "evidence_type": "OTHER",
+     "documents": [
+      {
+       "name": "proof.txt",
+       "url": "https://api-m.sandbox.paypal.com/v2/content/documents/DIS-010-11f1-db2c-c4f328b0-9c1c-3638df3d5826/files/1/download"
+      }
+     ],
+     "notes": "Shipped Nov 6 via USPS 9400100000000000000002 to the PayPal address 2211 N First St, San Jose CA 95131.",
+     "source": "SUBMITTED_BY_SELLER",
+     "date": "2026-11-08T04:27:55.791Z",
+     "action_info": {
+      "action": "PROVIDE_EVIDENCE"
+     },
      "dispute_life_cycle_stage": "CHARGEBACK"
     }
    ],
-   "seller_response_due_date": "2026-11-10T04:59:59.000Z",
    "offer": {
     "buyer_requested_amount": {
      "currency_code": "USD",
@@ -114,13 +395,6 @@
      "provided_time": "2026-11-06T21:25:28.182Z"
     }
    ],
-   "allowed_response_options": {
-    "accept_claim": {
-     "accept_claim_types": [
-      "REFUND"
-     ]
-    }
-   },
    "links": [
     {
      "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-GHY-10196892",
@@ -128,13 +402,8 @@
      "method": "GET"
     },
     {
-     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-GHY-10196892/accept-claim",
-     "rel": "accept_claim",
-     "method": "POST"
-    },
-    {
-     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-GHY-10196892/provide-evidence",
-     "rel": "provide_evidence",
+     "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-GHY-10196892/provide-supporting-info",
+     "rel": "provide_supporting_info",
      "method": "POST"
     }
    ]
@@ -457,6 +726,100 @@
   }
  },
  "captures": {
+  "9UL643661X493791L": {
+   "id": "9UL643661X493791L",
+   "amount": {
+    "currency_code": "USD",
+    "value": "28.00"
+   },
+   "final_capture": true,
+   "seller_protection": {
+    "status": "ELIGIBLE",
+    "dispute_categories": [
+     "ITEM_NOT_RECEIVED",
+     "UNAUTHORIZED_TRANSACTION"
+    ]
+   },
+   "status": "PENDING",
+   "status_details": {
+    "reason": "BUYER_COMPLAINT"
+   },
+   "supplementary_data": {
+    "related_ids": {
+     "order_id": "6TF39292H8582472R"
+    }
+   },
+   "payee": {
+    "email_address": "seller@example.com",
+    "merchant_id": "6VGPMS3QHUXRC"
+   },
+   "create_time": "2026-11-08T04:32:21Z",
+   "update_time": "2026-11-08T04:40:33Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/9UL643661X493791L",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/9UL643661X493791L/refund",
+     "rel": "refund",
+     "method": "POST"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6TF39292H8582472R",
+     "rel": "up",
+     "method": "GET"
+    }
+   ]
+  },
+  "8W1446543S561971V": {
+   "id": "8W1446543S561971V",
+   "amount": {
+    "currency_code": "USD",
+    "value": "74.00"
+   },
+   "final_capture": true,
+   "seller_protection": {
+    "status": "ELIGIBLE",
+    "dispute_categories": [
+     "ITEM_NOT_RECEIVED",
+     "UNAUTHORIZED_TRANSACTION"
+    ]
+   },
+   "status": "PENDING",
+   "status_details": {
+    "reason": "BUYER_COMPLAINT"
+   },
+   "supplementary_data": {
+    "related_ids": {
+     "order_id": "6YT15295WY2196440"
+    }
+   },
+   "payee": {
+    "email_address": "seller@example.com",
+    "merchant_id": "6VGPMS3QHUXRC"
+   },
+   "create_time": "2026-11-08T04:32:19Z",
+   "update_time": "2026-11-08T04:41:36Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/8W1446543S561971V",
+     "rel": "self",
+     "method": "GET"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/payments/captures/8W1446543S561971V/refund",
+     "rel": "refund",
+     "method": "POST"
+    },
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6YT15295WY2196440",
+     "rel": "up",
+     "method": "GET"
+    }
+   ]
+  },
   "55U43170E2019660P": {
    "id": "55U43170E2019660P",
    "amount": {
@@ -600,6 +963,374 @@
   }
  },
  "orders": {
+  "6TF39292H8582472R": {
+   "id": "6TF39292H8582472R",
+   "intent": "CAPTURE",
+   "status": "COMPLETED",
+   "payment_source": {
+    "paypal": {
+     "email_address": "buyer@example.com",
+     "account_id": "L2SQCQMXQJR42",
+     "account_status": "VERIFIED",
+     "name": {
+      "given_name": "John",
+      "surname": "Doe"
+     },
+     "address": {
+      "country_code": "US"
+     }
+    }
+   },
+   "purchase_units": [
+    {
+     "reference_id": "final-B",
+     "amount": {
+      "currency_code": "USD",
+      "value": "28.00",
+      "breakdown": {
+       "item_total": {
+        "currency_code": "USD",
+        "value": "28.00"
+       }
+      }
+     },
+     "payee": {
+      "email_address": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC"
+     },
+     "soft_descriptor": "PAYPAL *TEST STORE",
+     "items": [
+      {
+       "name": "Cotton tea towels (set of 3)",
+       "unit_amount": {
+        "currency_code": "USD",
+        "value": "28.00"
+       },
+       "quantity": "1",
+       "sku": "TWL-07"
+      }
+     ],
+     "shipping": {
+      "name": {
+       "full_name": "John Doe"
+      },
+      "address": {
+       "address_line_1": "2211 N First St",
+       "admin_area_2": "San Jose",
+       "admin_area_1": "CA",
+       "postal_code": "95131",
+       "country_code": "US"
+      }
+     },
+     "payments": {
+      "captures": [
+       {
+        "id": "9UL643661X493791L",
+        "status": "PENDING",
+        "status_details": {
+         "reason": "BUYER_COMPLAINT"
+        },
+        "amount": {
+         "currency_code": "USD",
+         "value": "28.00"
+        },
+        "final_capture": true,
+        "seller_protection": {
+         "status": "ELIGIBLE",
+         "dispute_categories": [
+          "ITEM_NOT_RECEIVED",
+          "UNAUTHORIZED_TRANSACTION"
+         ]
+        },
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/9UL643661X493791L",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/9UL643661X493791L/refund",
+          "rel": "refund",
+          "method": "POST"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6TF39292H8582472R",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-08T04:32:21Z",
+        "update_time": "2026-11-08T04:40:33Z"
+       }
+      ],
+      "refunds": [
+       {
+        "id": "67X91558SP335820C",
+        "amount": {
+         "currency_code": "USD",
+         "value": "26.53"
+        },
+        "seller_payable_breakdown": {
+         "gross_amount": {
+          "currency_code": "USD",
+          "value": "26.53"
+         },
+         "paypal_fee": {
+          "currency_code": "USD",
+          "value": "0.00"
+         },
+         "platform_fees": [
+          {
+           "amount": {
+            "currency_code": "USD",
+            "value": "0.00"
+           }
+          }
+         ],
+         "net_amount": {
+          "currency_code": "USD",
+          "value": "26.53"
+         },
+         "total_refunded_amount": {
+          "currency_code": "USD",
+          "value": "0.00"
+         }
+        },
+        "status": "PENDING",
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/refunds/67X91558SP335820C",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/9UL643661X493791L",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-07T20:40:33-08:00",
+        "update_time": "2026-11-07T20:40:33-08:00"
+       }
+      ]
+     }
+    }
+   ],
+   "payer": {
+    "name": {
+     "given_name": "John",
+     "surname": "Doe"
+    },
+    "email_address": "buyer@example.com",
+    "payer_id": "L2SQCQMXQJR42",
+    "address": {
+     "country_code": "US"
+    }
+   },
+   "create_time": "2026-11-08T04:32:21Z",
+   "update_time": "2026-11-08T04:40:33Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6TF39292H8582472R",
+     "rel": "self",
+     "method": "GET"
+    }
+   ]
+  },
+  "6YT15295WY2196440": {
+   "id": "6YT15295WY2196440",
+   "intent": "CAPTURE",
+   "status": "COMPLETED",
+   "payment_source": {
+    "paypal": {
+     "email_address": "buyer@example.com",
+     "account_id": "L2SQCQMXQJR42",
+     "account_status": "VERIFIED",
+     "name": {
+      "given_name": "John",
+      "surname": "Doe"
+     },
+     "address": {
+      "country_code": "US"
+     }
+    }
+   },
+   "purchase_units": [
+    {
+     "reference_id": "final-A",
+     "amount": {
+      "currency_code": "USD",
+      "value": "74.00",
+      "breakdown": {
+       "item_total": {
+        "currency_code": "USD",
+        "value": "74.00"
+       }
+      }
+     },
+     "payee": {
+      "email_address": "seller@example.com",
+      "merchant_id": "6VGPMS3QHUXRC"
+     },
+     "soft_descriptor": "PAYPAL *TEST STORE",
+     "items": [
+      {
+       "name": "Walnut cutting board",
+       "unit_amount": {
+        "currency_code": "USD",
+        "value": "74.00"
+       },
+       "quantity": "1",
+       "sku": "BRD-21"
+      }
+     ],
+     "shipping": {
+      "name": {
+       "full_name": "John Doe"
+      },
+      "address": {
+       "address_line_1": "2211 N First St",
+       "admin_area_2": "San Jose",
+       "admin_area_1": "CA",
+       "postal_code": "95131",
+       "country_code": "US"
+      },
+      "trackers": [
+       {
+        "id": "8W1446543S561971V-9400100000000000000074",
+        "status": "SHIPPED",
+        "items": [],
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6YT15295WY2196440",
+          "rel": "up",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6YT15295WY2196440/trackers/8W1446543S561971V-9400100000000000000074",
+          "rel": "update",
+          "method": "PATCH"
+         }
+        ],
+        "notify_payer": false
+       }
+      ]
+     },
+     "payments": {
+      "captures": [
+       {
+        "id": "8W1446543S561971V",
+        "status": "PENDING",
+        "status_details": {
+         "reason": "BUYER_COMPLAINT"
+        },
+        "amount": {
+         "currency_code": "USD",
+         "value": "74.00"
+        },
+        "final_capture": true,
+        "seller_protection": {
+         "status": "ELIGIBLE",
+         "dispute_categories": [
+          "ITEM_NOT_RECEIVED",
+          "UNAUTHORIZED_TRANSACTION"
+         ]
+        },
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/8W1446543S561971V",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/8W1446543S561971V/refund",
+          "rel": "refund",
+          "method": "POST"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6YT15295WY2196440",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-08T04:32:19Z",
+        "update_time": "2026-11-08T04:41:36Z"
+       }
+      ],
+      "refunds": [
+       {
+        "id": "08613271KM509833S",
+        "amount": {
+         "currency_code": "USD",
+         "value": "70.93"
+        },
+        "seller_payable_breakdown": {
+         "gross_amount": {
+          "currency_code": "USD",
+          "value": "70.93"
+         },
+         "paypal_fee": {
+          "currency_code": "USD",
+          "value": "0.00"
+         },
+         "platform_fees": [
+          {
+           "amount": {
+            "currency_code": "USD",
+            "value": "0.00"
+           }
+          }
+         ],
+         "net_amount": {
+          "currency_code": "USD",
+          "value": "70.93"
+         },
+         "total_refunded_amount": {
+          "currency_code": "USD",
+          "value": "0.00"
+         }
+        },
+        "status": "PENDING",
+        "links": [
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/refunds/08613271KM509833S",
+          "rel": "self",
+          "method": "GET"
+         },
+         {
+          "href": "https://api.sandbox.paypal.com/v2/payments/captures/8W1446543S561971V",
+          "rel": "up",
+          "method": "GET"
+         }
+        ],
+        "create_time": "2026-11-07T20:38:33-08:00",
+        "update_time": "2026-11-07T20:38:33-08:00"
+       }
+      ]
+     }
+    }
+   ],
+   "payer": {
+    "name": {
+     "given_name": "John",
+     "surname": "Doe"
+    },
+    "email_address": "buyer@example.com",
+    "payer_id": "L2SQCQMXQJR42",
+    "address": {
+     "country_code": "US"
+    }
+   },
+   "create_time": "2026-11-08T04:32:19Z",
+   "update_time": "2026-11-08T04:41:36Z",
+   "links": [
+    {
+     "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6YT15295WY2196440",
+     "rel": "self",
+     "method": "GET"
+    }
+   ]
+  },
   "2B456142VA476284X": {
    "id": "2B456142VA476284X",
    "intent": "CAPTURE",
@@ -1235,6 +1966,42 @@
   }
  },
  "trackers": {
+  "8W1446543S561971V-9400100000000000000074": {
+   "transaction_id": "8W1446543S561971V",
+   "tracking_number": "9400100000000000000074",
+   "status": "SHIPPED",
+   "carrier": "USPS",
+   "notify_buyer": false,
+   "shipment_direction": "FORWARD",
+   "shipment_uploader": "MERCHANT",
+   "account_id": "6VGPMS3QHUXRC",
+   "links": [
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/8W1446543S561971V-9400100000000000000074",
+     "rel": "self",
+     "method": "GET",
+     "encType": "application/json"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/8W1446543S561971V-9400100000000000000074",
+     "rel": "replace",
+     "method": "PUT",
+     "encType": "application/json"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/8W1446543S561971V-9400100000000000000074",
+     "rel": "edit",
+     "method": "PATCH",
+     "encType": "application/json"
+    },
+    {
+     "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers",
+     "rel": "self",
+     "method": "POST",
+     "encType": "application/json"
+    }
+   ]
+  },
   "55U43170E2019660P-9400100000000000000002": {
    "transaction_id": "55U43170E2019660P",
    "tracking_number": "9400100000000000000002",

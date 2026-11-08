@@ -12,13 +12,13 @@ def test_replay_end_to_end_simulates_state_machine(tmp_path, monkeypatch):
     monkeypatch.setattr(actions, "AUDIT", tmp_path / "audit.jsonl")
     c = ReplayClient()
     ids = [d["dispute_id"] for d in c.list_disputes()]
-    assert "PP-R-GHY-10196892" in ids
-    bundle, _ = fetch_bundle(c, "PP-R-GHY-10196892")
+    assert "PP-R-AKW-10197075" in ids
+    bundle, _ = fetch_bundle(c, "PP-R-AKW-10197075")
     v = decide(bundle)
     assert v.verdict == "RESPOND_WITH_EVIDENCE" and v.action == "provide_evidence"
     r = execute(c, v, confirmed=True, actor="test")
     assert r["ok"] and r["status_before"] == "WAITING_FOR_SELLER_RESPONSE" and r["status_after"] == "UNDER_REVIEW"
-    after, _ = fetch_bundle(c, "PP-R-GHY-10196892")
+    after, _ = fetch_bundle(c, "PP-R-AKW-10197075")
     assert "PROOF_OF_FULFILLMENT" in after.evidences_submitted
     assert decide(after).verdict == "NO_ACTION_AVAILABLE"  # proof on file, PayPal reviewing
     entry = json.loads((tmp_path / "audit.jsonl").read_text().splitlines()[-1])
@@ -50,8 +50,8 @@ def test_executor_falls_back_to_other_when_paypal_rejects_evidence_type(tmp_path
         return real(dispute, evidences, return_shipping_address, file)
 
     monkeypatch.setattr(c, "provide_evidence", flaky)
-    v = decide(fetch_bundle(c, "PP-R-GHY-10196892")[0])
+    v = decide(fetch_bundle(c, "PP-R-AKW-10197075")[0])
     r = execute(c, v, confirmed=True)
     assert r["ok"] and calls == [["PROOF_OF_FULFILLMENT"], ["OTHER"]]
-    assert "9400100000000000000002" in r["request"]["evidences"][0]["notes"]
+    assert "9400100000000000000074" in r["request"]["evidences"][0]["notes"]
     assert r["request"]["fallback_from"] == ["PROOF_OF_FULFILLMENT"]
