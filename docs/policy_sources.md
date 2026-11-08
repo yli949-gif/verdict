@@ -24,3 +24,6 @@ Sandbox state machine observed (2026-11-06), which the engine respects via links
 - If tracking was already on the order when the buyer filed, PayPal moved the case straight to UNDER_REVIEW / CHARGEBACK stage with only `provide_supporting_info` (and sandbox-only `adjudicate`/`require_evidence`) — the seller never gets a response window.
 - Seller `send_message` → UNDER_REVIEW → WAITING_FOR_BUYER_RESPONSE; `provide_evidence` succeeds once and the link disappears; `escalate` → UNDER_REVIEW.
 - Adding tracking to the order *after* the buyer filed does not change the dispute state; Verdict picks it up on the next read.
+
+- **Evidence types in CHARGEBACK stage (2026-11-07):** the dispute listed PROOF_OF_FULFILLMENT / PROOF_OF_REFUND / PROOF_OF_DELIVERY_SIGNATURE as `REQUESTED_FROM_SELLER`, yet `provide-evidence` with PROOF_OF_FULFILLMENT returned 400 `EVIDENCE_TYPE_IS_NOT_ALLOWED`; `OTHER` + notes + file was accepted. PayPal's test guide says to use `OTHER` under sandbox test conditions. Verdict shows the requested types and falls back to `OTHER` carrying the same facts when the typed submission is rejected (`verdict/actions.py`).
+- **Review → seller turn (2026-11-06 ~22:00):** a case in UNDER_REVIEW / CHARGEBACK came back to WAITING_FOR_SELLER_RESPONSE with a ~70h `seller_response_due_date` and links accept_claim + provide_evidence.

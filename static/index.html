@@ -124,6 +124,7 @@ function render(){
     ["Tracking on file",t?`${t.carrier} ${t.tracking_number} · ${t.status.toLowerCase()}`:"none","order",t?(["SHIPPED","DELIVERED","IN_TRANSIT"].includes(t.status)?true:null):false],
     ["Ship-to vs PayPal address",b.paypal_ship_to?`${b.paypal_ship_to.address_line_1}, ${b.paypal_ship_to.admin_area_2} ${b.paypal_ship_to.postal_code}`:"no address","order",b.tracker_matches_paypal_address],
     ["Evidence already sent",b.evidences_submitted.length?b.evidences_submitted.join(", "):"none","dispute",undefined],
+    ...(b.requested_evidence&&b.requested_evidence.length?[["Evidence PayPal asked you for",b.requested_evidence.join(", "),"dispute",undefined]]:[]),
     ["Actions PayPal allows now",v.allowed_now.length?v.allowed_now.map(a=>ACT[a]||a).join(" · "):"none","dispute links",v.allowed_now.length?true:false],
     ["Response deadline",due||"not set","dispute",v.deadline_hours!=null?(v.deadline_hours>48):null],
   ];

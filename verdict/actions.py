@@ -62,7 +62,16 @@ def execute(
                 raise ActionNotAllowed("no evidence plan to submit")
             summary = _evidence_summary(verdict, plan, message)
             req = {"evidences": plan, "file": "verdict_evidence_summary.txt"}
-            resp = client.provide_evidence(dispute, plan, file=("verdict_evidence_summary.txt", summary.encode(), "text/plain"))
+            try:
+                resp = client.provide_evidence(dispute, plan, file=("verdict_evidence_summary.txt", summary.encode(), "text/plain"))
+            except PayPalError as e:
+                if e.issue != "EVIDENCE_TYPE_IS_NOT_ALLOWED":
+                    raise
+                # PayPal (notably the sandbox in CHARGEBACK stage) rejects typed evidence; resend as OTHER with the
+                # same facts in the notes. Observed 2026-11-07; see docs/policy_sources.md.
+                fallback = [{"evidence_type": "OTHER", "notes": _flatten_evidence(plan)}]
+                req = {"evidences": fallback, "file": "verdict_evidence_summary.txt", "fallback_from": [e_["evidence_type"] for e_ in plan]}
+                resp = client.provide_evidence(dispute, fallback, file=("verdict_evidence_summary.txt", summary.encode(), "text/plain"))
         elif action == "provide_supporting_info":
             notes = message or (evidence_plan or verdict.evidence_plan or [{}])[0].get("notes") or verdict.message_draft
             req = {"notes": notes}
@@ -119,6 +128,16 @@ def execute(
         }
     )
     return result
+
+
+def _flatten_evidence(plan: list[dict]) -> str:
+    parts = []
+    for e in plan:
+        bits = [e.get("notes", "")]
+        for t in (e.get("evidence_info") or {}).get("tracking_info", []):
+            bits.append(f"{t.get('carrier_name')} tracking {t.get('tracking_number')}")
+        parts.append(f"[{e.get('evidence_type')}] " + " ".join(b for b in bits if b))
+    return " | ".join(parts)[:2000]
 
 
 def _evidence_summary(verdict: Verdict, plan: list[dict], extra: str | None) -> str:

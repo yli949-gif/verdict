@@ -225,6 +225,8 @@ def _decide_inr(b: EvidenceBundle, v: Verdict, full_proof: bool, cost: float) ->
         if b.seller_has_signature_proof:
             v.evidence_plan.append({"evidence_type": "PROOF_OF_DELIVERY_SIGNATURE", "notes": "Carrier signature confirmation attached."})
         v.flags.append("auto_evidence")  # proof is already in PayPal; submitting it is one API call
+        if b.requested_evidence:
+            v.flags.append("paypal_requested:" + ",".join(b.requested_evidence))
         if "provide_evidence" in b.links:
             v.verdict, v.action = "RESPOND_WITH_EVIDENCE", "provide_evidence"
         elif "provide_supporting_info" in b.links and b.supporting_info_submitted:

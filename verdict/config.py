@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 
@@ -24,13 +24,15 @@ _load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 @dataclass(frozen=True)
 class Settings:
-    paypal_client_id: str = os.environ.get("PAYPAL_CLIENT_ID", "")
-    paypal_client_secret: str = os.environ.get("PAYPAL_CLIENT_SECRET", "")
-    paypal_environment: str = os.environ.get("PAYPAL_ENVIRONMENT", "sandbox")
-    anthropic_api_key: str = os.environ.get("ANTHROPIC_API_KEY", "")
-    mode: str = os.environ.get("VERDICT_MODE", "")  # "replay" | "live" | "" (auto: live if credentials, else replay)
-    handling_cost_usd: float = float(os.environ.get("VERDICT_HANDLING_COST_USD", "8"))
-    data_dir: Path = Path(os.environ.get("VERDICT_DATA_DIR", Path(__file__).resolve().parent.parent / "data"))
+    paypal_client_id: str = field(default_factory=lambda: os.environ.get("PAYPAL_CLIENT_ID", ""))
+    paypal_client_secret: str = field(default_factory=lambda: os.environ.get("PAYPAL_CLIENT_SECRET", ""))
+    paypal_environment: str = field(default_factory=lambda: os.environ.get("PAYPAL_ENVIRONMENT", "sandbox"))
+    anthropic_api_key: str = field(default_factory=lambda: os.environ.get("ANTHROPIC_API_KEY", ""))
+    mode: str = field(default_factory=lambda: os.environ.get("VERDICT_MODE", ""))  # replay | live | "" (auto)
+    handling_cost_usd: float = field(default_factory=lambda: float(os.environ.get("VERDICT_HANDLING_COST_USD", "8")))
+    data_dir: Path = field(
+        default_factory=lambda: Path(os.environ.get("VERDICT_DATA_DIR", Path(__file__).resolve().parent.parent / "data"))
+    )
 
     @property
     def paypal_base_url(self) -> str:

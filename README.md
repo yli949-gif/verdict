@@ -1,116 +1,140 @@
-# Verdict — an honest dispute desk for PayPal sellers
+# verdict
 
-A PayPal dispute lands. Most small sellers either refund everything (and leave money on the table) or fight everything (and lose time, fees, and sometimes the case). Verdict reads what PayPal already has on file — **seller protection on the capture, tracking on the order, the buyer's claim, and the actions PayPal allows right now** — and tells the seller whether to refund or respond, with what evidence, and why. After the seller confirms, it sends the response through PayPal's Disputes API.
+Decision support for PayPal sellers handling disputes. Reads what PayPal already has on file about a dispute (seller protection on the capture, tracking on the order, the buyer's claim, the actions PayPal currently allows), decides whether the seller should refund or respond and with what evidence, and after the seller confirms, sends the response through the Disputes API.
 
-Built for the PayPal AI Hackathon (Nov 2026). Runs against the PayPal **sandbox**.
+Built for the PayPal AI Hackathon, Nov 2026. Runs against the PayPal sandbox. MIT.
 
 ![demo](docs/demo.gif)
 
+## Why
+
+A small seller gets an "item not received" dispute. Two common reactions, both wrong a lot of the time:
+
+- refund everything: in our test set, 31% of the time the tracking that wins the case was already sitting in PayPal's own data.
+- fight everything: 33% of the time there is no proof and the seller just burned a fee and 20 days.
+
+The hard part is the decision, not the paperwork. Existing tools automate the paperwork.
+
 ## What it does
 
-1. **Reads** the dispute, the capture (`seller_protection.status`), the order (ship-to address, trackers) and the carrier record. Nothing is typed in by hand.
-2. **Decides** with a deterministic, policy-cited rule engine: `REFUND_NOW · RESPOND_WITH_EVIDENCE · OFFER_PARTIAL · REPLY_AND_WAIT · NO_ACTION_AVAILABLE`, with the rule ids that fired, the policy text behind each, an expected-value comparison, and a confidence level.
-3. **Gates** every action on PayPal's own `links[]` / `allowed_response_options` — the only authoritative list of what is allowed at that moment — and validates every outbound body against PayPal's OpenAPI spec before it leaves the process. The engine never recommends an action PayPal would refuse (0% unsafe actions on 95 cases; confirmed by PayPal on 11/11 live probes).
-4. **Executes** only after a human confirms: `provide-evidence` (multipart with tracking + a generated evidence summary file), `accept-claim`, `make-offer`, `send-message`, `escalate`, `provide-supporting-info`. Every call is written to an audit log with the status transition it caused.
-5. **Reacts to PayPal webhooks** (`CUSTOMER.DISPUTE.*`, signature verified through PayPal's verify endpoint) and keeps a deadline-sorted inbox (`/api/inbox`) so the case that expires first is on top.
-6. **Shows what would change the verdict** (add tracking → respond, EV +$x) and how stable the verdict is under its own assumptions.
-7. **Explains** in English or 中文 with Claude (optional) — the model can rewrite the explanation and the buyer note but never the verdict, and its output is checked against the evidence bundle for invented tracking numbers or contradictions.
+```
+PayPal sandbox ──GET dispute / capture / order / tracker──▶ EvidenceBundle
+                                                                │
+                              rules (R0–R12, each cites PayPal policy text)
+                                                                │
+                            verdict + evidence plan + EV + counterfactuals
+                                                                │
+                      seller confirms ──▶ POST provide-evidence / accept-claim / ...
+                                                                │
+                                         audit.jsonl (request, response, status before → after)
+```
 
-A verdict is a **recommendation under PayPal's published policies**. PayPal makes the decision; Verdict never claims to predict it.
+Verdicts: `REFUND_NOW`, `RESPOND_WITH_EVIDENCE`, `OFFER_PARTIAL`, `REPLY_AND_WAIT`, `NO_ACTION_AVAILABLE`.
+
+Three things it does deliberately:
+
+1. The decision is a rule engine, not a model. Money decisions should be readable and testable. Every rule carries the policy sentence it rests on (`verdict/engine.py`, `docs/policy_sources.md`).
+2. PayPal's `links[]` and `allowed_response_options` on the dispute are treated as the only truth about what can be done right now. The engine never recommends an action that isn't in the links, and the client re-reads them at execution time. Outbound bodies are validated against PayPal's published OpenAPI spec before they leave the process.
+3. Claude is used only to explain the verdict (English / 中文) and draft the buyer note. It cannot change the verdict, and its text is checked for tracking numbers or amounts that are not in the evidence.
+
+A verdict is what PayPal's published policy says a seller should do with the evidence on file. It is not a prediction of PayPal's decision.
+
+## How it decides
+
+```
+no seller action in links                                  → NO_ACTION_AVAILABLE (and: do not refund while PayPal holds your proof)
+INR, protection covers INR, tracking to the PayPal address → RESPOND_WITH_EVIDENCE (PROOF_OF_FULFILLMENT + tracking)
+INR, tracking to a different address                       → REFUND_NOW (unless signature proof)
+INR, tracking on file but NOT_ELIGIBLE                     → RESPOND_WITH_EVIDENCE if a submit link exists (it's free), else REPLY_AND_WAIT
+INR, no tracking anywhere                                  → REFUND_NOW
+INR, in transit, before promised date                      → REPLY_AND_WAIT
+SNAD, listing/photos on hand                               → RESPOND_WITH_EVIDENCE; else OFFER_PARTIAL; below handling cost → REFUND_NOW
+UNAUTH, protection covers it, shipped with tracking        → RESPOND_WITH_EVIDENCE; else REFUND_NOW
+EV(contest) = p_keep × amount − handling_cost ≤ 0          → REFUND_NOW (not applied when the proof is already in PayPal's data)
+```
+
+`p_keep` values are stated assumptions (0.8 with full proof, 0.05 with none, ...), not calibrated probabilities. For each verdict the UI shows how much of a 20-point grid over `p_keep × handling_cost` keeps the same verdict, and what seller-side change would flip it ("add tracking → RESPOND_WITH_EVIDENCE, EV +$49").
 
 ## Results
 
-From `python -m eval.run` (95 cases: 3 captured from the sandbox, 77 synthetic bundles on the same schema, 15 messy/adversarial cases incl. prompt-injection in buyer messages). Ground truth is an independent decision table (`eval/oracle.py`) written from PayPal's policy pages — *what policy says the seller should do*, not what PayPal will decide. How the numbers are made, and every judgment call: [`eval/README.md`](eval/README.md).
+95 cases: 3 captured from the sandbox, 77 synthetic bundles on the same schema over a factor grid, 15 messy/adversarial (cancelled trackers, unknown protection, missed deadline, prompt injection in buyer messages). Ground truth is `eval/oracle.py`, a flat decision table written from PayPal's policy pages. Details and every judgment call: `eval/README.md`.
 
-| system | accuracy | unsafe-action rate | over-refund | under-refund |
+| system | agreement with policy | unsafe actions | over-refund | under-refund |
 |---|---|---|---|---|
 | refund everything | 56% | 0% | 31% | 0% |
-| fight everything PayPal lets you fight | 45% | 0% | 0% | 33% |
-| trust `seller_protection` alone | 33% | **37%** | 8% | 26% |
-| Claude alone, zero-shot on the same bundle (`claude-sonnet-5-5`) | 66% | 3% | 2% | 20% |
-| **Verdict (rules)** | **100%** | **0%** | 0% | 0% |
+| fight everything the links allow | 45% | 0% | 0% | 33% |
+| trust `seller_protection` alone | 33% | 37% | 8% | 26% |
+| Claude zero-shot on the same bundle (`claude-sonnet-5-5`) | 66% | 3% | 2% | 20% |
+| verdict (rules) | 100% | 0% | 0% | 0% |
 
-- *unsafe action*: recommending a PayPal call the dispute's links don't allow (PayPal returns `ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE`). *over-refund*: refunding when policy says respond/offer/wait. *under-refund*: contesting when policy says refund.
-- 100% against our own table is expected (the engine implements the policy); the number that matters is what is **not** ours grading us:
-  - **PayPal itself**: 11/11 probes that bypassed Verdict's gate were rejected by the sandbox and left the dispute unchanged ([`eval/live_gate_check.md`](eval/live_gate_check.md)).
-  - **PayPal's OpenAPI spec**: every evidence plan the engine can generate validates against the published schema (Hypothesis, 400 random bundles; `verdict/contract.py`).
-  - **A second rater**: a different model labelling from the policy text alone agrees with the table at κ = 0.57–0.62 across two runs ("moderate–substantial"); the disagreements were adjudicated by hand and two changed the engine ([`eval/second_rater.md`](eval/second_rater.md), [`eval/README.md`](eval/README.md)).
-  - **Robustness**: 90/95 verdicts are unchanged across a 20-point grid of the p_keep × handling-cost assumptions; the 5 sensitive ones are flagged in the UI.
-- The LLM-only baseline is competent on clean cases but contests 20% of cases policy says to refund (the expensive failure) and was swayed once by an injected buyer message; the rules were not.
-- Live sandbox replay (2026-11-06): `send-message`, `provide-evidence` (multipart + file), `provide-supporting-info`, `escalate` all returned 200 and moved the dispute as the state model predicts (`verdict/statemachine.py`, `docs/policy_sources.md`).
+unsafe = recommends a call PayPal would reject (`ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE`). over-refund = refunds when policy says contest. under-refund = contests when policy says refund.
 
-## How it decides (short version)
+100% against our own table is expected; the engine implements it. The checks that are not us grading us:
 
-```
-links[] has no seller action?  → NO_ACTION_AVAILABLE (never refund blind)
-INR  + protection covers INR + tracking to the PayPal address  → RESPOND_WITH_EVIDENCE (PROOF_OF_FULFILLMENT)
-INR  + tracking to a different address                          → REFUND_NOW (not protected) unless signature proof
-INR  + no tracking anywhere                                     → REFUND_NOW (fighting without proof ≈ 0 and costs a fee)
-INR  + still in transit before the promised date                → REPLY_AND_WAIT (send tracking + date)
-SNAD + listing/photos on hand                                   → RESPOND_WITH_EVIDENCE; else OFFER_PARTIAL; tiny amounts → refund
-UNAUTH + protection covers it + shipped with tracking           → RESPOND_WITH_EVIDENCE; else REFUND_NOW
-contest EV = p_keep × amount − handling cost ≤ 0                → REFUND_NOW dominates
-```
-Each rule carries its policy basis; see `verdict/engine.py` and `docs/policy_sources.md`. `p_keep` values are documented assumptions used to rank options, not calibrated probabilities.
+- PayPal: 11/11 calls that bypassed the gate (actions not in `links[]`) were rejected by the sandbox and left the dispute unchanged. `eval/live_gate_check.md`.
+- PayPal's OpenAPI spec: every evidence plan the engine can produce validates against it, on 400 random bundles (Hypothesis). `verdict/contract.py`, `tests/test_properties.py`.
+- A second rater: a different model, given only the policy text and the bundle, agrees with the table at κ = 0.57–0.62. The disagreements were adjudicated by hand; two changed the engine. `eval/second_rater.md`.
+- Robustness: 90/95 verdicts unchanged on ≥90% of the assumption grid; the other 5 are flagged in the UI.
+- Live: `send-message`, `provide-evidence` (multipart + file), `provide-supporting-info`, `escalate` returned 200 against the sandbox and moved the dispute as `verdict/statemachine.py` predicts.
 
-## Run it
+The zero-shot LLM is the interesting baseline: fine on clean cases, but it contests 20% of the cases policy says to refund, and it was moved once by an injected buyer message. The rules were not.
 
-**No credentials? Replay mode.** Real sandbox cases captured on 2026-11-06 (scrubbed) with the observed state machine simulating PayPal's responses:
+## Run
+
+Without PayPal credentials (replay of real sandbox cases, writes simulated with the observed state machine, labelled as replay in the UI):
+
 ```bash
-pip install -e . && VERDICT_MODE=replay uvicorn verdict.app:app --port 8787   # open http://localhost:8787
+pip install -e .
+VERDICT_MODE=replay uvicorn verdict.app:app --port 8787    # http://localhost:8787
 ```
-Everything works — verdicts, counterfactuals, confirm-and-execute, audit — and the UI says it is a replay. `render.yaml` deploys this mode on Render with one click; `docs/postman/` has a Postman collection for the API.
 
-**Live sandbox mode.**
+With a sandbox app (enable Disputes and Transaction Search on the app):
+
 ```bash
-pip install -e .                         # Python 3.11+
-cp .env.example .env                     # add PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET (sandbox app with Disputes + Transaction Search enabled)
-uvicorn verdict.app:app --port 8787      # open http://localhost:8787
-```
-CLI: `python -m verdict.cli list` · `show <dispute_id>` · `execute <dispute_id> --yes`.
-Tests: `pytest` (incl. Hypothesis). Lint/types: `ruff check . && mypy verdict`. Evaluation: `python -m eval.generate_cases && python -m eval.run`; live checks: `python -m eval.live_gate_check`, `python -m eval.second_rater`.
-Optional: set `ANTHROPIC_API_KEY` for Claude explanations and the `llm_only` baseline.
-
-To create test disputes: pay a sandbox order from a sandbox *personal* account, then file "Report a problem → I haven't received the item" from that account's Activity page. The dispute reaches `WAITING_FOR_SELLER_RESPONSE` in ~2–3 minutes. (The documented `POST /v1/customer/disputes` sandbox endpoint rejected every documented body in our tests; details in `docs/policy_sources.md`.)
-
-## PayPal + AI, concretely
-
-- PayPal APIs used: Disputes v1 (list/get, provide-evidence, accept-claim, make-offer, send-message, escalate, provide-supporting-info), Payments v2 captures, Orders v2 (+ tracking), Shipment Tracking v1, Transaction Search v1. `verdict/paypal.py` is a thin client; `verdict/tools.py` exposes three toolkit-shaped tools (`list_disputes`, `get_dispute_verdict`, `execute_dispute_verdict`) for OpenAI/Anthropic/LangChain agents — the official Python Agent Toolkit (1.1.0) ships no dispute tools, so these are shaped to be upstreamable.
-- AI: Claude (`claude-sonnet-5-5` by default) for explanations and buyer notes, behind a faithfulness check; the decision itself is deterministic on purpose — money decisions need rules you can read and test.
-
-## Security model (short)
-
-- **Buyer text is data, never instructions.** The rule engine never reads buyer messages for decisions; Claude sees them inside a JSON field with a system prompt that forbids changing the verdict, and its output is checked for invented numbers and contradictions. Two injection cases are in the eval set.
-- **Nothing is sent without a human.** The API refuses `execute` without `confirmed: true`; the agent tools carry the same flag; the UI requires an explicit checkbox.
-- **PayPal decides what is possible.** Links are re-read at execution time; bodies are validated against PayPal's OpenAPI spec; every PayPal call carries a fresh `PayPal-Request-Id`.
-- **Secrets** only in environment variables; `.env` is git-ignored; CI runs gitleaks; sandbox fixtures are scrubbed of account emails.
-- **Audit**: every attempted action (success or refusal) is appended to `data/audit.jsonl` with request, response and the status transition.
-
-## Limitations (please read)
-
-- The oracle is our reading of PayPal's policy pages. PayPal's adjudication uses signals no API exposes (buyer history, carrier scans, fraud models). We report policy-agreement, never win rates.
-- Sandbox ≠ production: the sandbox dispute state machine is simplified and can't produce adjudication outcomes on demand.
-- Synthetic cases vary six factors on a grid; real dispute data is messier and INR-heavy.
-- Seller-side facts PayPal doesn't hold (signature proof, listing screenshots, return policy) are entered as checkboxes; Verdict can't verify them.
-- One merchant, one currency per run; no chargeback-network (Visa/Mastercard) logic.
-
-## Repo map
-
-```
-verdict/paypal.py     REST client; every write gated by require_link()
-verdict/bundle.py     EvidenceBundle (normalized facts) + builder from raw PayPal JSON
-verdict/engine.py     rules R0–R11, EV, policy citations
-verdict/actions.py    executor + audit log
-verdict/narrative.py  optional Claude explanation with faithfulness check
-verdict/app.py        FastAPI API + static/index.html UI
-verdict/tools.py      agent-framework tool definitions
-verdict/replay.py     credential-less replay of captured sandbox cases (state machine simulated)
-verdict/webhooks.py   CUSTOMER.DISPUTE.* webhook verification + event log
-verdict/contract.py   outbound payload validation against PayPal's OpenAPI spec (docs/paypal-spec/)
-verdict/statemachine.py observed dispute states/transitions (test generator + documentation)
-eval/                 oracle.py, generate_cases.py, run.py, live_gate_check.py, second_rater.py, cases/, *.md reports
-tests/                engine, client, multipart, Hypothesis invariants, fixtures from real sandbox JSON
-.github/workflows/    CI: ruff, mypy, pytest, eval regression gate (acc ≥ 98%, unsafe = 0), gitleaks
+cp .env.example .env        # PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET; ANTHROPIC_API_KEY optional
+uvicorn verdict.app:app --port 8787
+python -m verdict.cli list | show <dispute_id> | execute <dispute_id> --yes
 ```
 
-MIT © 2026 Yiyao (Ella) Li
+To get a dispute to look at: pay a sandbox order from a sandbox personal account, then "Report a problem → I haven't received the item" from that account's Activity page. It reaches `WAITING_FOR_SELLER_RESPONSE` in 2–3 minutes. The documented `POST /v1/customer/disputes` sandbox endpoint rejected every documented body we tried; notes in `docs/policy_sources.md`.
+
+Other entry points: `POST /webhooks/paypal` (CUSTOMER.DISPUTE.*, verified through PayPal's verify endpoint), `GET /api/inbox` (actionable disputes sorted by time left), `verdict/tools.py` (three tool definitions for OpenAI / Anthropic / LangChain agents), `docs/postman/`, `render.yaml`.
+
+```bash
+pytest                                   # 23 tests incl. Hypothesis invariants
+ruff check . && mypy verdict
+python -m eval.generate_cases && python -m eval.run   # writes eval/results.md
+python -m eval.live_gate_check           # needs sandbox credentials
+```
+
+## PayPal surface used
+
+Disputes v1 (list, get, provide-evidence, accept-claim, make-offer, send-message, escalate, provide-supporting-info), Payments v2 captures (`seller_protection`), Orders v2 (ship-to address, trackers), Shipment Tracking v1 (carrier), Transaction Search v1, webhook signature verification. The Python Agent Toolkit on PyPI (1.1.0) has no dispute tools; `verdict/tools.py` is shaped so they could be upstreamed.
+
+Things learned the hard way, recorded in `docs/policy_sources.md`: tracking added before the buyer files sends the case straight to PayPal review with no seller window; the dispute-level `seller_protection_eligible` field populates late (read the capture instead); the order object omits the carrier; `provide-evidence` consumes its link after one call.
+
+## Limitations
+
+- Policy agreement is not a win rate. PayPal adjudicates with signals no API exposes.
+- The sandbox state machine is simplified and cannot produce adjudication outcomes on demand.
+- Synthetic cases are a grid; real data is messier and INR-heavy.
+- Seller-side facts PayPal does not hold (signature proof, listing screenshots) are checkboxes; nothing verifies them.
+- One merchant, one currency, PayPal disputes only (no card-network chargeback logic).
+
+## Layout
+
+```
+verdict/paypal.py        REST client; every write gated by require_link() and schema-validated
+verdict/bundle.py        EvidenceBundle + builder from raw PayPal JSON
+verdict/engine.py        rules, EV, counterfactuals, robustness
+verdict/actions.py       executor + audit log
+verdict/contract.py      validation against docs/paypal-spec/customer-disputes-v1.json
+verdict/statemachine.py  observed states and transitions
+verdict/replay.py        credential-less replay client
+verdict/webhooks.py      CUSTOMER.DISPUTE.* verification + event log
+verdict/narrative.py     Claude explanation with faithfulness check
+verdict/tools.py         agent tool definitions
+verdict/app.py           FastAPI + static/index.html
+eval/                    oracle, case generator, runner, live gate check, second rater, reports
+tests/                   unit, property, replay, webhook tests; fixtures from real sandbox JSON
+```
